@@ -115,7 +115,9 @@ local resumeThread = if DEFERRED_MODE then task.defer else coroutine.resume
 local Connection = {}
 Connection.__index = Connection
 
-export type Connection<Signature = () -> ()> = setmetatable<{
+-- Avoid setting metatables in this type, typesolver doesn't handle them too well.
+export type Connection<Signature = () -> ()> = {
+	read Signal: Signal<Signature>,
 	read Connected: boolean,
 	read Callback: Signature,
 
@@ -132,26 +134,23 @@ export type Connection<Signature = () -> ()> = setmetatable<{
 		]]
 		function(self: Connection<Signature>): () end
 	),
-}, typeof(Connection)>
+}
 
 -- Internal type used for accessing properties that shouldn't be used by end user
 type InternalConnection = {
 	_prev: InternalConnection?,
 	_next: InternalConnection?,
-	_signal: InternalSignal,
+	Signal: InternalSignal,
 } & writable<Connection>
 
 --[[
 	Disconnects the connection from the signal.
 ]]
-function Connection.Disconnect<Signature>(self: Connection<Signature>): ()
-	-- Allow ourselves to access internal properties, will be optimized away by compiler
-	self = (self :: any) :: InternalConnection -- typecast to any first, otherwise causes a type too complex error for some reason.
-
+function Connection.Disconnect(self: InternalConnection): ()
 	-- Check that the connection is actually connected
 	if not self.Connected then return end
 
-	local signal = self._signal
+	local signal = self.Signal
 	local prv, nxt = self._prev, self._next
 
 	self.Connected = false
@@ -226,7 +225,8 @@ type function SignalWaitSignature(signal: type, signature: type, fallback: type)
 	)
 end
 
-export type Signal<Signature = () -> ()> = setmetatable<{
+-- Avoid setting metatables in this type, typesolver doesn't handle them too well.
+export type Signal<Signature = () -> ()> = {
 	read Connect: typeof(
 		--[[
 			Connects the given function to the signal and returns a <code>Connection</code> that represents it.
@@ -256,10 +256,10 @@ export type Signal<Signature = () -> ()> = setmetatable<{
 	),
 
 	-- UDTF handled signatures --
-	-- NOTE: Can't have the signal type as first parameter, triggers a spurious "Recursive type being used with different parameters"
+	-- NOTE: Can't have signal as parameters in these signatures, not serializable by type functions.
 	read Fire: SignalFireSignature<any, Signature, (any) -> ()>,
 	read Wait: SignalWaitSignature<any, Signature, (any) -> ()>,
-}, typeof(Signal)>
+}
 
 -- Internal type used for accessing properties that shouldn't be used by end user
 type InternalSignal = setmetatable<{
@@ -275,12 +275,12 @@ type InternalSignal = setmetatable<{
 ]]
 local function newConnection(signal: InternalSignal, func: (...any) -> ()): (InternalConnection)
 	local tail = signal._tail
-	local connection: InternalConnection = setmetatable({
+	local connection = setmetatable({
 		Connected = true,
 		Callback = func,
-		_signal = signal,
+		Signal = signal,
 		_prev = tail,
-	}, Connection) :: any
+	}, Connection) :: InternalConnection
 
 	-- If tail connection exists: update it to point `_next` to this connection.
 	-- Otherwise, this connection is the first connection, set signal head to it.
