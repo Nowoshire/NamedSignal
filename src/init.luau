@@ -3,43 +3,17 @@
 	
 	v0.1.0
 	
-	A signal implementation for Luau, designed with maximum developer convenience in mind — without sacrificing on standard
-	features and performance.
+	
 
-	IMPORTANT:
-	This library does NOT support the old typesolver, as it completely lacks many features necessary for this to work!
+	NOTICE:
+		This library does NOT support the old typesolver, as it completely lacks the features necessary for this to work!
 
-	Notable differences from other libraries:
-	- Fully strictly typed for the new Luau typesolver.
-	- Uses function signatures instead of standard generic types.
-		- This allows you to name your arguments (hence the name, 'NamedSignal'), and define variadic function arguments!
-		- COMPATIBILITY:
-			If you require this to be backwards compatible with other signal libraries (generic parameters), then you can
-			create a new type that proxies the parameters in a functiontype:
-			```luau
-			export type LegacySignal<Params...> = Signal<(Params...) -> ()>
-			```
-		- Example usage:
+	COMPATIBILITY:
+		If you require this to be backwards compatible with other signal libraries (generic type pack parameters), then you can
+		define a new type that proxies the parameters in a functiontype:
 		```luau
-			local Signal = require(path.to.module)
-			local exampleEvent = Signal.new() :: Signal.Signal<(paramA: "hello", paramB: "world!", ...string) -> ()>
-
-			-- Fully anonymous autofilled, including parameter names!
-			exampleEvent:Connect(function(paramA: "hello", paramB: "world!", ...: string)
-				print(paramA, paramB, ...)
-			end)
-
-			-- Fully typechecked, powered by User Defined Type Functions!
-			task.spawn(function()
-				local a, b, c = exampleEvent:Wait()
-				print("hello from wait!", a, b, c)
-			end)
-
-			-- This too!
-			exampleEvent:Fire("hello", "world!", "variadic!")
+		export type GenericSignal<Params...> = Signal<(Params...) -> ()>
 		```
-	- Up to 5x faster for `Signal:Fire()` compared to other libraries (benchmarked against GoodSignal), with
-	  comparable performance for other features.
 
 	This software is licensed under the MIT License:
 		https://github.com/Nowoshire/NamedSignal/blob/main/LICENSE
@@ -71,7 +45,7 @@
 --!optimize 2
 
 -- Determines whether callbacks are deferred or called immediately.
--- NOTE: Deferred invocation causes a massive performance degradation, this is true for all signal libraries.
+-- NOTE: Deferred invocation causes a massive performance degradation; this is true for all signal libraries.
 local DEFERRED_MODE = false
 
 --[[
@@ -221,7 +195,7 @@ type function SignalWaitSignature(signal: type, signature: type, fallback: type)
 
 	return types.newfunction(
 		{head = {signal}},
-		signature:parameters()
+		signature:parameters() -- returns
 	)
 end
 
@@ -257,6 +231,7 @@ export type Signal<Signature = () -> ()> = {
 
 	-- UDTF handled signatures --
 	-- NOTE: Can't have signal as parameters in these signatures, not serializable by type functions.
+	-- Unfortunately we do lose the names for Signal:Fire(), there isn't much that can be done about it.
 	read Fire: SignalFireSignature<any, Signature, (any) -> ()>,
 	read Wait: SignalWaitSignature<any, Signature, (any) -> ()>,
 }

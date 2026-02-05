@@ -5,4 +5,8 @@
 /*.rbxlx.lock
 /*.rbxl.lock
 
+# Affinity files
+*.af~lock~
+*.af
+
 sourcemap.json
