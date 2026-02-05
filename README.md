@@ -1,11 +1,11 @@
-<center>
+<div align="center">
 <img src="./logo.png" alt="NamedSignal Logo" style="width:50%; height:auto;">
 
 ---
 ### A Luau signal implementation that lets you name and define variadic parameters — conveniently.
 
 TODO: Buttons and links
-</center>
+</div>
 
 <details>
 <summary>
@@ -81,11 +81,11 @@ There are unfortunately *some* limitations, which can't be resolved without hack
 	```
 </details>
 <br>
-<center>
+<div align="center">
 
 # Example Usage
 NamedSignal aims to be familiar and simple to use, below is an example snippet that should get you started!
-</center>
+</div>
 
 ```lua
 local Signal = require(path.to.module)
