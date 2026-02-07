@@ -3,14 +3,15 @@ NamedSignal utilizes standard optimizations, such as thread recycling and linked
 
 <small>
 *I am unable to figure out how NamedSignal's Fire is faster, as I do not implement any additional optimizations.
-<br>If there is a bug, or you cannot reproduce these results, please submit a bug report!
+<br>If there is a bug, or you cannot reproduce these results, please submit an [issue](https://github.com/Nowoshire/NamedSignal/issues)!
 </small>
 
 ## Benchmarks
-Benchmarked with the following machine specs:
-
-- Ryzen 7 5700X3D
-- 32GB DDR4 3200MT/s
+Benchmarked with the included `Benchmark.rbxm`, and with the following details:
+- Windows 11 Pro Build 26200
+- Roblox Studio Version 0.706.0.7060750
+- Ryzen 7 5700X3D 8-Core Processor
+- 32GB DDR4 3200MT/s (4x8)
 
 All libraries were benchmarked with their respective immediate modes instead of deferred modes if applicable.
 
