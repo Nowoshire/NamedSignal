@@ -8,6 +8,7 @@ NamedSignal utilizes standard optimizations, such as thread recycling and linked
 
 ## Benchmarks
 Benchmarked with the included `Benchmark.rbxm`, and with the following details:
+
 - Windows 11 Pro Build 26200
 - Roblox Studio Version 0.706.0.7060750
 - Ryzen 7 5700X3D 8-Core Processor
