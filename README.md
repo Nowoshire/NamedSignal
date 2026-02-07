@@ -18,7 +18,8 @@
 
 </div>
 
-> [!IMPORTANT] NEW SOLVER REQUIRED!
+> [!IMPORTANT]
+> ### Requires New Luau Type Solver<br>
 > NamedSignal is built for the New Luau Type Solver, it is not compatible with the old solver. See [Compatibility](#compatibility) for more details.
 
 <details>
