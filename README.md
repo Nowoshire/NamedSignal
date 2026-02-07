@@ -1,21 +1,33 @@
 <div align="center">
-<img src="./logo.png" alt="NamedSignal Logo" style="width:50%; height:auto;">
+<img src="docs/logo.png" alt="NamedSignal Logo" style="width:50%; height:auto;">
 
 ---
 ### A Luau signal implementation that lets you name and define variadic parameters — conveniently.
+`a01: type` begone!
+<br><br>
 
-TODO: Buttons and links
+[![Download Badge](https://img.shields.io/badge/Download-005CC0?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Nowoshire/NamedSignal/releases/latest)
+&ensp;
+[![Documentation Badge](https://img.shields.io/badge/Documentation-5C00C0?style=for-the-badge&logo=readme&logoColor=white)](https://Nowoshire.github.io/NamedSignal/)
+<br>
+
+[![DevForum Badge](https://img.shields.io/badge/DevForum-lightblue?style=social&logo=robloxstudio)
+](https://devforum.roblox.com)
+&nbsp;
+[![GitHub Badge](https://img.shields.io/badge/GitHub-gray?style=social&logo=github)](https://github.com/Nowoshire/NamedSignal)
+
 </div>
+
+> [!IMPORTANT] NEW SOLVER REQUIRED!
+> NamedSignal is built for the New Luau Type Solver, it is not compatible with the old solver. See [Compatibility](#compatibility) for more details.
 
 <details>
 <summary>
-	
+
 # Features
 </summary>
 
 NamedSignal follows in the steps of GoodSignal and other signal libraries, for comprehensive documentation, please refer to the Documentation Website.
-
-The primary focus of NamedSignal is allowing developers to name and define variadic parameters (hence the name, 'NamedSignal'), allowing for a much richer anonymous autofill when connecting a function to a signal. This is accomplished by using functiontypes (eg. `(foo: "bar") -> ()`) and User Defined Type Functions (UDTFs) exclusive to the New Luau Type Solver.
 
 ## API Overview
 ### Signal
@@ -27,6 +39,7 @@ The primary focus of NamedSignal is allowing developers to name and define varia
 | :Fire() | `(self: Signal, ...any) -> ()` | Calls all connected functions and resumes all waiting threads with the given arguments. |
 | :DisconnectAll() | `(self: Signal) -> ()` | Disconnects all connections from the signal. |
 | :Destroy() | `(self: Signal) -> ()` | Disconnects all connections from the signal, and removes its metatable. |
+
 ---
 
 ### Connection
@@ -37,6 +50,7 @@ The primary focus of NamedSignal is allowing developers to name and define varia
 | .Signal | `Signal` | A reference to the signal the connection is for. |
 | .Connected | `boolean` | Describes whether the connection is active. |
 | .Callback | `(...any) -> ()` | The connected function. |
+
 ---
 </details>
 
@@ -46,11 +60,48 @@ The primary focus of NamedSignal is allowing developers to name and define varia
 # Performance
 </summary>
 
-NamedSignal utilizes standard optimizations, such as thread recycling and linked lists for O(1) disconnects.
+NamedSignal utilizes standard optimizations, such as thread recycling and linked lists. As such, most features of NamedSignal have comparable performance to other implementations — with the exception of `Signal:Fire()`, which is roughly 4-5x faster than others according to benchmarks.
 
-The performance of NamedSignal is comparable to others that use such optimizations, *with the exception of `Signal:Fire()`*, which is **3-5x faster** than other implementations according to benchmarks. How? Honestly, no clue — I was only aiming for named parameters with comparable performance.
+### NamedSignal (Immediate)
+#### Signal.new()
+358.9999978430569 µs (10000 call total)
 
-TODO: Benchmarks
+#### Signal:Connect()
+723.5999801196158 µs (5000 call total)
+
+#### Signal:Fire()
+| Connection Count | Time (200 call average) |
+| --- | --- |
+| 0 connections | 0.03850000211969018 µs |
+| 1 connections | 0.15300000086426735 µs |
+| 100 connections | 12.558999878820032 µs |
+| 1000 connections | 112.05450020497665 µs |
+| 5000 connections | 554.5504999463446 µs |
+
+#### Signal:Disconnect()
+| Connection Count | Time (5000 disconnects) |
+| --- | --- |
+| 5000 to 0 connections | 385.6000257655978 µs |
+| 11000 to 6000 connections | 336.60000190138817 µs |
+| 12000 to 7000 connections | 282.3999966494739 µs |
+
+#### Signal:DisconnectAll()
+| Connection Count | Time (500 call average) |
+| --- | --- |
+| 0 connections | 0.11000002268701792 µs |
+| 100 connections | 2.287598676048219 µs |
+| 1000 connections | 19.89719911944121 µs |
+| 5000 connections | 98.53019961155951 µs |
+
+#### Signal:Destroy()
+| Connection Count | Time (500 call average) |
+| --- | --- |
+| 0 connections | 0.1716000260785222 µs |
+| 100 connections | 2.2674002684652805 µs |
+| 1000 connections | 20.06679878104478 µs |
+| 5000 connections | 99.25879840739071 µs |
+
+Comparisons are available at https://Nowoshire.github.io/NamedSignal/performance/#benchmarks
 </details>
 
 <details>
@@ -84,19 +135,19 @@ There are unfortunately *some* limitations, which can't be resolved without hack
 <div align="center">
 
 # Example Usage
-NamedSignal aims to be familiar and simple to use, below is an example snippet that should get you started!
+NamedSignal aims to be familiar and simple to use to those experienced with typechecking, below is an example snippet that should get you started!
 </div>
 
 ```lua
 local Signal = require(path.to.module)
 
 -- Soon you will able to use Signal.new<<()->()>>() syntax to instatiate the generic while writing the statement.
-local exampleEvent = Signal.new() :: Signal.Signal<(say: "hello world!")->()>
+local exampleSignal = Signal.new() :: Signal.Signal<(say: "hello world!")->()>
 
 -- Anonymous autofilled!
-exampleEvent:Connect(function(say: "hello world!")
+exampleSignal:Connect(function(say: "hello world!")
 	print(say)
 end)
 
-exampleEvent:Fire("hello world!")
+exampleSignal:Fire("hello world!")
 ```

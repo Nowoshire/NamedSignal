@@ -2,8 +2,9 @@
 	-- NamedSignal --
 	
 	v0.1.0
-	
-	
+
+	A Luau signal implementation that lets you name and define variadic parameters — conveniently.
+	https://Nowoshire.github.io/NamedSignal/
 
 	NOTICE:
 		This library does NOT support the old typesolver, as it completely lacks the features necessary for this to work!
