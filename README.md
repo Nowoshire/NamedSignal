@@ -11,8 +11,7 @@
 [![Documentation Badge](https://img.shields.io/badge/Documentation-5C00C0?style=for-the-badge&logo=readme&logoColor=white)](https://Nowoshire.github.io/NamedSignal/)
 <br>
 
-[![DevForum Badge](https://img.shields.io/badge/DevForum-lightblue?style=social&logo=robloxstudio)
-](https://devforum.roblox.com)
+[![DevForum Badge](https://img.shields.io/badge/DevForum-lightblue?style=social&logo=robloxstudio)](https://devforum.roblox.com/t/4341837)
 &nbsp;
 [![GitHub Badge](https://img.shields.io/badge/GitHub-gray?style=social&logo=github)](https://github.com/Nowoshire/NamedSignal)
 
@@ -28,7 +27,7 @@
 # Features
 </summary>
 
-NamedSignal follows in the steps of GoodSignal and other signal libraries, for comprehensive documentation, please refer to the Documentation Website.
+NamedSignal follows in the steps of GoodSignal and other signal libraries, for comprehensive documentation, please refer to the [Documentation Website](https://Nowoshire.github.io/NamedSignal/).
 
 ## API Overview
 ### Signal

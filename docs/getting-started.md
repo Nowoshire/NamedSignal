@@ -8,7 +8,7 @@
 === "from GitHub"
 
 	1. Download the latest release from https://github.com/Nowoshire/NamedSignal/releases/latest.
-	2. Place the `.rbxm` or `.luau` file in your preferred location.
+	2. Place the `.luau` file in your preferred location.
 
 === "from Wally"
 
