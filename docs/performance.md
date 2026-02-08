@@ -20,157 +20,181 @@ All libraries were benchmarked with their respective immediate modes instead of 
 
 	### NamedSignal (Immediate)
 	#### Signal.new()
-	254.60001779720187 µs (10000 call total)
+	293.0999999080086 µs (10000 call total)
 
 	#### Signal:Connect()
-	733.4999972954392 µs (5000 call total)
+	713.000000359898 µs (5000 call total)
+
+	#### Signal:Once()
+	913.800000489573 µs (5000 call total)
+
+	#### Signal:Wait()
+	1418.2000004439033 µs (5000 call total)
 
 	#### Signal:Fire()
 	| Connection Count | Time (200 call average) |
 	| --- | --- |
-	| 0 connections | 0.03850000211969018 µs |
-	| 1 connections | 0.15249999705702066 µs |
-	| 100 connections | 10.957500198855996 µs |
-	| 1000 connections | 108.5195000632666 µs |
-	| 5000 connections | 580.0900000031106 µs |
+	| 0 connections | 0.04450000233191531 µs |
+	| 1 connections | 0.15999999959603883 µs |
+	| 100 connections | 10.810500002662593 µs |
+	| 1000 connections | 110.34500000278058 µs |
+	| 5000 connections | 550.5834999985382 µs |
 
 	#### Signal:Disconnect()
 	| Connection Count | Time (5000 disconnects) |
 	| --- | --- |
-	| 5000 to 0 connections | 446.9000268727541 µs |
-	| 11000 to 6000 connections | 338.70001789182425 µs |
-	| 15000 to 10000 connections | 278.40002439916134 µs |
+	| 5000 to 0 connections | 332.3999999338412 µs |
+	| 11000 to 6000 connections | 342.50000044266926 µs |
+	| 15000 to 10000 connections | 306.2999994654092 µs |
 
 	#### Signal:DisconnectAll()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.07760000880807638 µs |
-	| 100 connections | 2.23060033749789 µs |
-	| 1000 connections | 20.423398236744106 µs |
-	| 5000 connections | 99.65059999376535 µs |
+	| 0 connections | 0.0878000046213856 µs |
+	| 100 connections | 2.240600000732229 µs |
+	| 1000 connections | 19.955399991886225 µs |
+	| 5000 connections | 99.18940003444732 µs |
 
 	#### Signal:Destroy()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.1570003805682063 µs |
-	| 100 connections | 2.3032001918181777 µs |
-	| 1000 connections | 22.739999229088426 µs |
-	| 5000 connections | 102.84220054745674 µs |
+	| 0 connections | 0.16340000183845405 µs |
+	| 100 connections | 2.2328000031848205 µs |
+	| 1000 connections | 19.69119998102542 µs |
+	| 5000 connections | 98.56499997476931 µs |
 
 === "SignalPlus (Immediate)"
 
 	### SignalPlus (Immediate)
 	#### Signal.new()
-	267.9999452084303 µs (10000 call total)
+	472.49999988707714 µs (10000 call total)
 
 	#### Signal:Connect()
-	440.1000333018601 µs (5000 call total)
+	506.3999997219071 µs (5000 call total)
+
+	#### Signal:Once()
+	872.1000003788504 µs (5000 call total)
+
+	#### Signal:Wait()
+	1176.800000393996 µs (5000 call total)
 
 	#### Signal:Fire()
 	| Connection Count | Time (200 call average) |
 	| --- | --- |
-	| 0 connections | 0.03950000973418355 µs |
-	| 1 connections | 0.5000000237487257 µs |
-	| 100 connections | 47.06300009274855 µs |
-	| 1000 connections | 453.9959999965504 µs |
-	| 5000 connections | 2252.3745000944473 µs |
+	| 0 connections | 0.03949999609176302 µs |
+	| 1 connections | 0.6195000014486141 µs |
+	| 100 connections | 45.51250000076834 µs |
+	| 1000 connections | 451.3489999999365 µs |
+	| 5000 connections | 2253.7010000041846 µs |
 
 	#### Signal:Disconnect()
 	| Connection Count | Time (5000 disconnects) |
 	| --- | --- |
-	| 5000 to 0 connections | 243.99999529123306 µs |
-	| 11000 to 6000 connections | 242.9999876767397 µs |
-	| 15000 to 10000 connections | 224.19996093958616 µs |
+	| 5000 to 0 connections | 234.30000055668643 µs |
+	| 11000 to 6000 connections | 241.49999990186188 µs |
+	| 15000 to 10000 connections | 230.10000040812884 µs |
 
 	#### Signal:DisconnectAll()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.08100003469735384 µs |
-	| 100 connections | 1.9846011418849232 µs |
-	| 1000 connections | 19.81779746711254 µs |
-	| 5000 connections | 104.08740036655217 µs |
+	| 0 connections | 0.1246000119863311 µs |
+	| 100 connections | 1.9977999927505155 µs |
+	| 1000 connections | 19.31200000581157 µs |
+	| 5000 connections | 98.0693999936193 µs |
 
 	#### Signal:Destroy()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.16399985179305077 µs |
-	| 100 connections | 2.0871999440714717 µs |
-	| 1000 connections | 20.494997268542647 µs |
-	| 5000 connections | 102.39319957327098 µs |
+	| 0 connections | 0.1739999916026136 µs |
+	| 100 connections | 2.0981999914511107 µs |
+	| 1000 connections | 19.709000009243027 µs |
+	| 5000 connections | 98.99919998315454 µs |
 
 === "FastSignal (Immediate)"
 
 	### FastSignal (Immediate)
 	#### Signal.new()
-	560.4999605566263 µs (10000 call total)
+	445.7000004549627 µs (10000 call total)
 
 	#### Signal:Connect()
-	596.199999563396 µs (5000 call total)
+	782.1999997759121 µs (5000 call total)
+
+	#### Signal:Once()
+	812.6000002448563 µs (5000 call total)
+
+	#### Signal:Wait()
+	3521.999999975378 µs (5000 call total)
 
 	#### Signal:Fire()
 	| Connection Count | Time (200 call average) |
 	| --- | --- |
-	| 0 connections | 0.07349997758865356 µs |
-	| 1 connections | 0.5055000656284392 µs |
-	| 100 connections | 44.73799985134974 µs |
-	| 1000 connections | 427.88949998794124 µs |
-	| 5000 connections | 2117.3549999366514 µs |
+	| 0 connections | 0.049000000217347406 µs |
+	| 1 connections | 0.4875000013271347 µs |
+	| 100 connections | 43.87949999909324 µs |
+	| 1000 connections | 468.44399999827147 µs |
+	| 5000 connections | 2132.1844999965833 µs |
 
 	#### Signal:Disconnect()
 	| Connection Count | Time (5000 disconnects) |
 	| --- | --- |
-	| 5000 to 0 connections | 260.7000060379505 µs |
-	| 11000 to 6000 connections | 258.39998852461576 µs |
-	| 15000 to 10000 connections | 257.7000414021313 µs |
+	| 5000 to 0 connections | 251.80000011459924 µs |
+	| 11000 to 6000 connections | 251.7000002626446 µs |
+	| 15000 to 10000 connections | 255.40000024193432 µs |
 
 	#### Signal:DisconnectAll()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.07239985279738903 µs |
-	| 100 connections | 1.7841983353719115 µs |
-	| 1000 connections | 16.819598735310137 µs |
-	| 5000 connections | 87.67940162215382 µs |
+	| 0 connections | 0.0712000073690433 µs |
+	| 100 connections | 1.8486000244593015 µs |
+	| 1000 connections | 16.75280002200452 µs |
+	| 5000 connections | 85.32660000309988 µs |
 
 	#### Signal:Destroy()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.09720004163682461 µs |
-	| 100 connections | 1.844600890763104 µs |
-	| 1000 connections | 17.400998855009675 µs |
-	| 5000 connections | 88.17239885684103 µs |
+	| 0 connections | 0.09380000483361073 µs |
+	| 100 connections | 1.9170000050507952 µs |
+	| 1000 connections | 17.063200009943102 µs |
+	| 5000 connections | 86.44400002049224 µs |
 
 === "GoodSignal"
 
 	### GoodSignal
 	#### Signal.new()
-	599.0000208839774 µs (10000 call total)
+	576.1000002166838 µs (10000 call total)
 
 	#### Signal:Connect()
-	721.2000200524926 µs (5000 call total)
+	789.4999998825369 µs (5000 call total)
+
+	#### Signal:Once()
+	1106.2999992645928 µs (5000 call total)
+
+	#### Signal:Wait()
+	1332.8000004548812 µs (5000 call total)
 
 	#### Signal:Fire()
 	| Connection Count | Time (200 call average) |
 	| --- | --- |
-	| 0 connections | 0.0344999716617167 µs |
-	| 1 connections | 0.5609999061562121 µs |
-	| 100 connections | 49.47449982864782 µs |
-	| 1000 connections | 487.85299994051456 µs |
-	| 5000 connections | 2613.876500108745 µs |
+	| 0 connections | 0.03499999820633093 µs |
+	| 1 connections | 0.5694999981642468 µs |
+	| 100 connections | 41.92849999981263 µs |
+	| 1000 connections | 484.88150000139285 µs |
+	| 5000 connections | 2494.465999998283 µs |
 
 	#### Signal:Disconnect()
 	| Connection Count | Time (5000 disconnects) |
 	| --- | --- |
-	| 5000 to 0 connections | 134394.79999942705 µs |
-	| 11000 to 6000 connections | 457752.29996070266 µs |
-	| 15000 to 10000 connections | 352137.3000112362 µs |
+	| 5000 to 0 connections | 132245.3000002497 µs |
+	| 11000 to 6000 connections | 446723.50000018923 µs |
+	| 15000 to 10000 connections | 346957.09999959945 µs |
 
 	#### Signal:DisconnectAll()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.051800161600112915 µs |
-	| 100 connections | 0.07639988325536251 µs |
-	| 1000 connections | 0.090000219643116 µs |
-	| 5000 connections | 0.11980021372437477 µs |
+	| 0 connections | 0.04919999810226727 µs |
+	| 100 connections | 0.057599992942414246 µs |
+	| 1000 connections | 0.07960003313201014 µs |
+	| 5000 connections | 0.11879999328812119 µs |
 
 	#### Signal:Destroy()
 	| Connection Count | Time (500 call average) |
