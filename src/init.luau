@@ -1,7 +1,7 @@
 --[[
 	-- NamedSignal --
 	
-	v1.0.0
+	v1.0.1
 
 	A Luau signal implementation that lets you name and define variadic parameters — conveniently.
 
@@ -307,6 +307,7 @@ end
 ]]
 function Signal.Fire(self: InternalSignal, ...: any): () -- NOTE: UDTF handles the proper parameters
 	local connection = self._head
+	local tailConnection = self._tail
 	while connection do
 		-- Every connection in the list should be connected, so we'll skip checking if it's connected here.
 		local numThreads = #threadPool
@@ -322,6 +323,11 @@ function Signal.Fire(self: InternalSignal, ...: any): () -- NOTE: UDTF handles t
 		end
 
 		resumeThread(thread, thread, connection.Callback, ...) -- (thread, callback, ...) -> ()
+
+		-- Prevent connections made by connections from firing
+		if connection == tailConnection then
+			break
+		end
 
 		-- Update for next iteration
 		connection = connection._next
