@@ -1,12 +1,13 @@
 --[[
 	-- NamedSignal --
 	
-	v0.1.0
+	v0.1.1
 
 	A Luau signal implementation that lets you name and define variadic parameters — conveniently.
-	https://Nowoshire.github.io/NamedSignal/
 
-	NOTICE:
+	Comprehensive documentation is available at: https://Nowoshire.github.io/NamedSignal/
+
+	IMPORTANT:
 		This library does NOT support the old typesolver, as it completely lacks the features necessary for this to work!
 
 	COMPATIBILITY:
@@ -49,19 +50,6 @@
 -- NOTE: Deferred invocation causes a massive performance degradation; this is true for all signal libraries.
 local DEFERRED_MODE = false
 
---[[
-	Forces all properties in the given tabletype to be writable non-recursively.
-]]
-type function writable(ty: type)
-	for keyType, rwType in ty:properties() do
-		if not rwType.write then
-			ty:setwriteproperty(keyType, rwType.read)
-		end
-	end
-
-	return ty
-end
-
 -- Thread Recycling --
 local threadPool = {} :: {thread}
 
@@ -85,6 +73,19 @@ local function eventHandlerRoutine()
 end
 
 local resumeThread = if DEFERRED_MODE then task.defer else coroutine.resume
+
+--[[
+	Forces all properties in the given tabletype to be writable non-recursively.
+]]
+type function writable(ty: type)
+	for keyType, rwType in ty:properties() do
+		if not rwType.write then
+			ty:setwriteproperty(keyType, rwType.read)
+		end
+	end
+
+	return ty
+end
 
 -- Connection Class --
 local Connection = {}
@@ -164,7 +165,7 @@ type function SignalFireSignature(signal: type, signature: type, fallback: type)
 	end
 
 	if signatureTag ~= "function" then
-		print(`SignalFireSignature<T0, T1, T2> expects a 'function' type for \`T1\`, got '{signatureTag}' type instead.`)
+		print(`Signal<Signature> expects a 'function' type for \`Signature\`, got '{signatureTag}' type instead.`)
 		return fallback
 	end
 
@@ -190,12 +191,12 @@ type function SignalWaitSignature(signal: type, signature: type, fallback: type)
 	end
 
 	if signatureTag ~= "function" then
-		print(`SignalFireSignature<T0, T1, T2> expects a 'function' type for \`T1\`, got '{signatureTag}' type instead.`)
+		print(`Signal<Signature> expects a 'function' type for \`Signature\`, got '{signatureTag}' type instead.`)
 		return fallback
 	end
 
 	return types.newfunction(
-		{head = {signal}},
+		{head = {signal}}, -- parameters
 		signature:parameters() -- returns
 	)
 end
@@ -238,10 +239,10 @@ export type Signal<Signature = () -> ()> = {
 }
 
 -- Internal type used for accessing properties that shouldn't be used by end user
-type InternalSignal = setmetatable<{
+type InternalSignal = {
 	_head: InternalConnection?,
 	_tail: InternalConnection?,
-}, typeof(Signal)>
+} & Signal
 
 -- NOTE: The proper function signatures are set by the `Signal` type, we use internal types here to simplify the process of writing
 -- these without hacky typecasting.
