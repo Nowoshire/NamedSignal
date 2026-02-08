@@ -1,7 +1,7 @@
 --[[
 	-- NamedSignal --
 	
-	v0.1.1
+	v1.0.0
 
 	A Luau signal implementation that lets you name and define variadic parameters — conveniently.
 
