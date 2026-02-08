@@ -68,48 +68,48 @@ NamedSignal utilizes standard optimizations, such as thread recycling and linked
 
 ### NamedSignal (Immediate)
 #### Signal.new()
-327.30000020819716 µs (10000 call total)
+375.99999996018596 µs (10000 call total)
 
 #### Signal:Connect()
-712.1999988157768 µs (5000 call total)
+467.9000012401957 µs (5000 call total)
 
 #### Signal:Once()
-893.7999991758261 µs (5000 call total)
+743.1000012729783 µs (5000 call total)
 
 #### Signal:Wait()
-1316.5999989723787 µs (5000 call total)
+1102.1999998774845 µs (5000 call total)
 
 #### Signal:Fire()
 | Connection Count | Time (200 call average) |
 | --- | --- |
-| 0 connections | 0.05099998816149309 µs |
-| 1 connections | 0.14050001482246444 µs |
-| 100 connections | 10.66700000592391 µs |
-| 1000 connections | 118.0595000005269 µs |
-| 5000 connections | 573.4409999968193 µs |
+| 0 connections | 0.04200001058052294 µs |
+| 1 connections | 0.1650000012887176 µs |
+| 100 connections | 13.564500004576985 µs |
+| 1000 connections | 115.78499999814085 µs |
+| 5000 connections | 555.1089999971737 µs |
 
 #### Signal:Disconnect()
 | Connection Count | Time (5000 disconnects) |
 | --- | --- |
-| 5000 to 0 connections | 333.19999783998355 µs |
-| 11000 to 6000 connections | 434.9999981059227 µs |
-| 15000 to 10000 connections | 274.6999998635147 µs |
+| 5000 to 0 connections | 335.5000008014031 µs |
+| 11000 to 6000 connections | 335.40000003995374 µs |
+| 15000 to 10000 connections | 288.69999732705764 µs |
 
 #### Signal:DisconnectAll()
 | Connection Count | Time (500 call average) |
 | --- | --- |
-| 0 connections | 0.07799998275004327 µs |
-| 100 connections | 2.2626000063610263 µs |
-| 1000 connections | 20.214400014083367 µs |
-| 5000 connections | 99.64100000797771 µs |
+| 0 connections | 0.13480005145538598 µs |
+| 100 connections | 1.0327999843866564 µs |
+| 1000 connections | 9.549599977617618 µs |
+| 5000 connections | 50.3668000237667 µs |
 
 #### Signal:Destroy()
 | Connection Count | Time (500 call average) |
 | --- | --- |
-| 0 connections | 0.1961999078048393 µs |
-| 100 connections | 2.2962001094128937 µs |
-| 1000 connections | 21.678000106476247 µs |
-| 5000 connections | 98.19240003707819 µs |
+| 0 connections | 0.15800003166077659 µs |
+| 100 connections | 1.165799971204251 µs |
+| 1000 connections | 9.813200049393345 µs |
+| 5000 connections | 50.63779999181861 µs |
 
 Comparisons are available at https://Nowoshire.github.io/NamedSignal/performance/#benchmarks
 </details>
