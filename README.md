@@ -15,6 +15,10 @@
 &nbsp;
 [![GitHub Badge](https://img.shields.io/badge/GitHub-gray?style=social&logo=github)](https://github.com/Nowoshire/NamedSignal)
 
+```toml
+Signal = "nowoshire/namedsignal@^1.0.0"
+```
+
 </div>
 
 > [!IMPORTANT]
