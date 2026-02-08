@@ -1,7 +1,7 @@
 --[[
 	-- NamedSignal --
 	
-	v1.0.1
+	v1.1.0
 
 	A Luau signal implementation that lets you name and define variadic parameters — conveniently.
 
@@ -116,6 +116,7 @@ export type Connection<Signature = () -> ()> = {
 type InternalConnection = {
 	_prev: InternalConnection?,
 	_next: InternalConnection?,
+	_mono: number, -- Used for preventing connections made during Fire from being fired as part of that same call.
 	Signal: InternalSignal,
 } & writable<Connection>
 
@@ -242,6 +243,7 @@ export type Signal<Signature = () -> ()> = {
 type InternalSignal = {
 	_head: InternalConnection?,
 	_tail: InternalConnection?,
+	_maxMono: number
 } & Signal
 
 -- NOTE: The proper function signatures are set by the `Signal` type, we use internal types here to simplify the process of writing
@@ -251,12 +253,16 @@ type InternalSignal = {
 	Connects the given function to the signal and returns a <code>Connection</code> that represents it.
 ]]
 local function newConnection(signal: InternalSignal, func: (...any) -> ()): (InternalConnection)
+	local mono = signal._maxMono
+	mono += 1
+
 	local tail = signal._tail
 	local connection = setmetatable({
 		Connected = true,
 		Callback = func,
 		Signal = signal,
 		_prev = tail,
+		_mono = mono,
 	}, Connection) :: InternalConnection
 
 	-- If tail connection exists: update it to point `_next` to this connection.
@@ -269,6 +275,7 @@ local function newConnection(signal: InternalSignal, func: (...any) -> ()): (Int
 
 	-- Update tail connection
 	signal._tail = connection
+	signal._maxMono = mono
 
 	return connection
 end
@@ -307,8 +314,13 @@ end
 ]]
 function Signal.Fire(self: InternalSignal, ...: any): () -- NOTE: UDTF handles the proper parameters
 	local connection = self._head
-	local tailConnection = self._tail
+	local maxMono = self._maxMono -- Keep track of the max monotonic counter
 	while connection do
+		-- Recursion safeguard: Prevent connections made by connections from firing after :Fire() was first called
+		if connection._mono > maxMono then
+			break
+		end
+		
 		-- Every connection in the list should be connected, so we'll skip checking if it's connected here.
 		local numThreads = #threadPool
 		local thread: thread
@@ -324,41 +336,36 @@ function Signal.Fire(self: InternalSignal, ...: any): () -- NOTE: UDTF handles t
 
 		resumeThread(thread, thread, connection.Callback, ...) -- (thread, callback, ...) -> ()
 
-		-- Prevent connections made by connections from firing
-		if connection == tailConnection then
-			break
-		end
-
 		-- Update for next iteration
 		connection = connection._next
+	end
+end
+
+local function baseDisconnectAll(signal: InternalSignal)
+	local connection = signal._head
+	while connection do
+		-- We don't need to remove _next and _prev
+		connection.Connected = false
+		connection = connection._next -- Update for next iteration
 	end
 end
 
 --[[
 	Disconnects all connections from the signal.
 ]]
-local function disconnectAll(signal: InternalSignal)
-	local connection = signal._head
-	while connection do
-		local nxt = connection._next
-		connection.Connected = false
-		connection._prev = nil
-		connection._next = nil
-
-		connection = nxt -- Update for next iteration
-	end
-
-	signal._head = nil
-	signal._tail = nil
+function Signal.DisconnectAll(self: InternalSignal): ()
+	baseDisconnectAll(self)
+	self._head = nil
+	self._tail = nil
+	self._maxMono = 0 -- reset monotonic counter as it's now safe to do so.
 end
-
-Signal.DisconnectAll = disconnectAll
 
 --[[
 	Disconnects all connections from the signal, and removes its metatable.
 ]]
 function Signal.Destroy(self: InternalSignal): ()
-	disconnectAll(self)
+	baseDisconnectAll(self)
+	table.clear(self)
 	setmetatable(self, nil)
 end
 
@@ -369,7 +376,7 @@ local NamedSignal = {}
 	Returns a new Signal.
 ]]
 function NamedSignal.new<Signature>(): (Signal<Signature>)
-	return setmetatable({}, Signal) :: any
+	return setmetatable({_maxMono = 0}, Signal) :: any
 end
 
 return NamedSignal
