@@ -20,48 +20,48 @@ All libraries were benchmarked with their respective immediate modes instead of 
 
 	### NamedSignal (Immediate)
 	#### Signal.new()
-	293.0999999080086 µs (10000 call total)
+	327.30000020819716 µs (10000 call total)
 
 	#### Signal:Connect()
-	713.000000359898 µs (5000 call total)
+	712.1999988157768 µs (5000 call total)
 
 	#### Signal:Once()
-	913.800000489573 µs (5000 call total)
+	893.7999991758261 µs (5000 call total)
 
 	#### Signal:Wait()
-	1418.2000004439033 µs (5000 call total)
+	1316.5999989723787 µs (5000 call total)
 
 	#### Signal:Fire()
 	| Connection Count | Time (200 call average) |
 	| --- | --- |
-	| 0 connections | 0.04450000233191531 µs |
-	| 1 connections | 0.15999999959603883 µs |
-	| 100 connections | 10.810500002662593 µs |
-	| 1000 connections | 110.34500000278058 µs |
-	| 5000 connections | 550.5834999985382 µs |
+	| 0 connections | 0.05099998816149309 µs |
+	| 1 connections | 0.14050001482246444 µs |
+	| 100 connections | 10.66700000592391 µs |
+	| 1000 connections | 118.0595000005269 µs |
+	| 5000 connections | 573.4409999968193 µs |
 
 	#### Signal:Disconnect()
 	| Connection Count | Time (5000 disconnects) |
 	| --- | --- |
-	| 5000 to 0 connections | 332.3999999338412 µs |
-	| 11000 to 6000 connections | 342.50000044266926 µs |
-	| 15000 to 10000 connections | 306.2999994654092 µs |
+	| 5000 to 0 connections | 333.19999783998355 µs |
+	| 11000 to 6000 connections | 434.9999981059227 µs |
+	| 15000 to 10000 connections | 274.6999998635147 µs |
 
 	#### Signal:DisconnectAll()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.0878000046213856 µs |
-	| 100 connections | 2.240600000732229 µs |
-	| 1000 connections | 19.955399991886225 µs |
-	| 5000 connections | 99.18940003444732 µs |
+	| 0 connections | 0.07799998275004327 µs |
+	| 100 connections | 2.2626000063610263 µs |
+	| 1000 connections | 20.214400014083367 µs |
+	| 5000 connections | 99.64100000797771 µs |
 
 	#### Signal:Destroy()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.16340000183845405 µs |
-	| 100 connections | 2.2328000031848205 µs |
-	| 1000 connections | 19.69119998102542 µs |
-	| 5000 connections | 98.56499997476931 µs |
+	| 0 connections | 0.1961999078048393 µs |
+	| 100 connections | 2.2962001094128937 µs |
+	| 1000 connections | 21.678000106476247 µs |
+	| 5000 connections | 98.19240003707819 µs |
 
 === "SignalPlus (Immediate)"
 
