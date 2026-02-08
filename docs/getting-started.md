@@ -12,7 +12,8 @@
 
 === "from Wally"
 
-	Coming soon!
+	1. Add `Signal = "nowoshire/namedsignal@^1.0.0"` to your wally.toml dependencies.
+	2. Run `wally install`.
 
 ## Usage
 The library currently has one interface function, `.new()`, which returns a new signal when called:
