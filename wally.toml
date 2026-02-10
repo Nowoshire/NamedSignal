@@ -1,7 +1,7 @@
 [package]
 name = "nowoshire/namedsignal"
-description = "A Luau signal implementation that lets you name and define variadic parameters — conveniently."
-version = "1.1.0"
+description = "A Luau signal that allows the naming and definition of variadic parameters, and fully complies with modern standards, such as Synchronous FRP (Functional Reactive Programming) with Atomic Propagation."
+version = "1.2.0"
 license = "MIT"
 authors = ["Nowoshire"]
 
