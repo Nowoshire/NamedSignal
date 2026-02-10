@@ -8,9 +8,9 @@ A few notable differences from most other implementations:
 
 - Built for the new solver, and fully strictly-typed.
 - Supports naming and defining variadic parameters by using functiontypes (e.g. `(arg: string) -> ()`).
-  - For backwards compatibility with other implementations that use generic type pack parameters, you can create a new type that proxies them in a functiontype:
-	```lua
-	export type GenericSignal<Params...> = Signal<(Params...) -> ()>
-	```
+    - For backwards compatibility with other implementations that use generic type pack parameters, you can create a new type that proxies them in a functiontype:
+		```lua
+		export type GenericSignal<Params...> = Signal<(Params...) -> ()>
+		```
 - Connection safety: Connections made during invocation wiil not be fired in that same invocation.
 - Snapshot certified: Mutations made during invocation are deferred until the invocation completes, with optional an optional for `Connection:Disconnect()`.
