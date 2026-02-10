@@ -13,4 +13,4 @@ A few notable differences from most other implementations:
 		export type GenericSignal<Params...> = Signal<(Params...) -> ()>
 		```
 - Connection safety: Connections made during invocation wiil not be fired in that same invocation.
-- Snapshot certified: Mutations made during invocation are deferred until the invocation completes, with optional an optional for `Connection:Disconnect()`.
+- Snapshot certified: Mutations made during invocation are deferred until the invocation completes, with optional bypass for `Connection:Disconnect()`.
