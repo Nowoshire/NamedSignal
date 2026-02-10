@@ -2,7 +2,7 @@
 <img src="docs/logo.png" alt="NamedSignal Logo" style="width:50%; height:auto;">
 
 ---
-### Zero Compromises Luau Signal Implementation
+### A Zero Compromises Luau Signal Implementation
 A signal designed for Synchronous Functional Reactive Programming (FRP) with Atomic Propagation, that also lets you name and define variadic parameters (`a01: type` begone!)
 <br><br>
 
