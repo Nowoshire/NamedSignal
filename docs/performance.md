@@ -1,16 +1,15 @@
-# Performance
-NamedSignal utilizes standard optimizations, such as thread recycling and linked lists. As such, most features of NamedSignal have comparable performance to other implementations — with the exception of `Signal:Fire()`*, which is roughly 4-5x faster than others according to benchmarks.
+---
+hide:
+  - toc
+---
 
-<small>
-*I am unable to figure out how NamedSignal's Fire is faster, as I do not implement any additional optimizations.
-<br>If there is a bug, or you cannot reproduce these results, please submit an [issue](https://github.com/Nowoshire/NamedSignal/issues)!
-</small>
+# Performance
+NamedSignal implements standard optimizations such as thread recycling (multiple threads) and linked lists, most of its features have comparable performance to other implementations, except for `Signal:Fire()`, which is 3-4x faster according to benchmarks!
 
 ## Benchmarks
 Benchmarked with the included `Benchmark.rbxm`, and with the following details:
 
-- Windows 11 Pro Build 26200
-- Roblox Studio Version 0.706.0.7060750
+- Windows 11 Pro
 - Ryzen 7 5700X3D 8-Core Processor
 - 32GB DDR4 3200MT/s (4x8)
 
@@ -20,50 +19,50 @@ All libraries were benchmarked with their respective immediate modes instead of 
 
 	### NamedSignal (Immediate)
 	#### Signal.new()
-	375.99999996018596 µs (10000 call total)
+	518.1000014999881 µs (10000 call total)
 
 	#### Signal:Connect()
-	467.9000012401957 µs (5000 call total)
+	561.5999980363995 µs (5000 call total)
 
 	#### Signal:Once()
-	743.1000012729783 µs (5000 call total)
+	879.899991559796 µs (5000 call total)
 
 	#### Signal:Wait()
-	1102.1999998774845 µs (5000 call total)
+	1351.5999889932573 µs (5000 call total)
 
 	#### Signal:Fire()
 	| Connection Count | Time (200 call average) |
 	| --- | --- |
-	| 0 connections | 0.04200001058052294 µs |
-	| 1 connections | 0.1650000012887176 µs |
-	| 100 connections | 13.564500004576985 µs |
-	| 1000 connections | 115.78499999814085 µs |
-	| 5000 connections | 555.1089999971737 µs |
+	| 0 connections | 0.10249998013023287 µs |
+	| 1 connections | 0.26050001906696707 µs |
+	| 100 connections | 12.55499999388121 µs |
+	| 1000 connections | 118.07850001787301 µs |
+	| 5000 connections | 593.9519999810727 µs |
 
 	#### Signal:Disconnect()
 	| Connection Count | Time (5000 disconnects) |
 	| --- | --- |
-	| 5000 to 0 connections | 335.5000008014031 µs |
-	| 11000 to 6000 connections | 335.40000003995374 µs |
-	| 15000 to 10000 connections | 288.69999732705764 µs |
+	| 5000 to 0 connections | 421.1000050418079 µs |
+	| 11000 to 6000 connections | 424.90000487305224 µs |
+	| 15000 to 10000 connections | 370.1000096043572 µs |
 
 	#### Signal:DisconnectAll()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.13480005145538598 µs |
-	| 100 connections | 1.0327999843866564 µs |
-	| 1000 connections | 9.549599977617618 µs |
-	| 5000 connections | 50.3668000237667 µs |
+	| 0 connections | 0.12380009866319595 µs |
+	| 100 connections | 1.0521998046897352 µs |
+	| 1000 connections | 10.415600088890642 µs |
+	| 5000 connections | 50.618400069652125 µs |
 
 	#### Signal:Destroy()
 	| Connection Count | Time (500 call average) |
 	| --- | --- |
-	| 0 connections | 0.15800003166077659 µs |
-	| 100 connections | 1.165799971204251 µs |
-	| 1000 connections | 9.813200049393345 µs |
-	| 5000 connections | 50.63779999181861 µs |
+	| 0 connections | 0.14700007159262896 µs |
+	| 100 connections | 1.1203999165445566 µs |
+	| 1000 connections | 9.929600200848654 µs |
+	| 5000 connections | 50.641600391827524 µs |
 
-=== "GoodSignal"
+=== "SignalPlus"
 
 	### SignalPlus (Immediate)
 	#### Signal.new()

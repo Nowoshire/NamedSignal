@@ -1,5 +1,5 @@
 # API Reference
-NamedSignal follows in the steps of GoodSignal and other signal libraries, its runtime API is functionally identical to most implementations.
+Most of NamedSignal's API is identical to other popular implementations, with a few key additions related to Synchronous Functional Reactive Programming (FRP) with Atomic Propagation.
 
 ## Library
 | Member | Type | Description |
@@ -20,8 +20,8 @@ NamedSignal follows in the steps of GoodSignal and other signal libraries, its r
 ### Connection`<Signature = () -> ()>`
 | Member | Type | Description |
 | --- | --- | --- |
-| :Disconnect() | `(self: Connection<Signature>) -> ()` | Disconnects the connection from the signal. |
-| :Destroy() | `(self: Connection<Signature>) -> ()` | An alias for `:Disconnect()` for cleanup utils. |
+| :Disconnect() | `(self: Connection<Signature>, skipReentrancy: boolean?) -> ()` | Disconnects the connection from the signal, optionally skipping re-entrancy if `skipReentrancy` is truthy. |
+| :Destroy() | `(self: Connection<Signature>, skipReentrancy: boolean?) -> ()` | An alias for `:Disconnect()` for cleanup utils. |
 | .Signal | `Signal<Signature>` | A reference to the signal the connection is for. |
 | .Connected | `boolean` | Describes whether the connection is active. |
-| .Callback | `(...any) -> ()` | The connected function. |
+| .Callback | `Signature` | The connected function. |

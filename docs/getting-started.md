@@ -1,33 +1,35 @@
 # Getting Started
-
 !!! info "New Solver Required"
 
-	NamedSignal is built for the New Luau Type Solver, it is not compatible with the old solver. See [Compatibility](compatibility.md) for more details.
+	NamedSignal is built for the New Luau Type Solver, and its types are *not* compatible with the old solver.
+	See [Compatibility](compatibility.md) for more details.
 
 ## Installation
 === "from GitHub"
 
 	1. Download the latest release from https://github.com/Nowoshire/NamedSignal/releases/latest.
-	2. Place the `.luau` file in your preferred location.
+	2. Place the `.luau` or `.rbxm` file in your preferred location.
 
 === "from Wally"
 
 	1. Add `Signal = "nowoshire/namedsignal@^1.0.0"` to your wally.toml dependencies.
-	2. Run `wally install`.
+	2. Run `wally install` in your terminal.
 
 ## Usage
-The library currently has one interface function, `.new()`, which returns a new signal when called:
+The library currently returns a table with one interface function: `Signal.new()`, which you use to create signals:
+
 ```lua
-local Signal = require(path.to.module)
+local Signal = require(path.to.namedsignal)
 
--- Soon you will able to use Signal.new<<()->()>>() syntax to instatiate the generic while writing the statement.
-local exampleSignal = Signal.new() :: Signal.Signal<(say: "hello world!")->()>
+local exampleEvent = Signal.new() :: Signal.Signal<(say: string) -> ()>
 
--- Anonymous autofilled!
-exampleSignal:Connect(function(say: "hello world!")
+-- Anonymous function auto-fill fully autocompletes parameter names!
+exampleEvent:Connect(function(say: string)
 	print(say)
 end)
 
-exampleSignal:Fire("hello world!")
+-- And everything else is fully typed too!
+exampleEvent:Fire("Hello, world!")
 ```
-You can then use its methods to connect/disconnect and fire connections. NamedSignal follows conventional standards, and is functionally compatible with other signal implementations like SignalPlus!
+
+See [API Reference](api-reference.md) for a list of all members.

@@ -9,6 +9,7 @@ nav:
     - compatibility.md
   - api-reference.md
   - performance.md
+  - certification.md
 theme:
   name: material
   logo: logo.png

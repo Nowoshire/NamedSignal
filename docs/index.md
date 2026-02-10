@@ -1,10 +1,14 @@
 # Introduction
-NamedSignal is a Signal library, which serve as a much better pure-Luau alternative to the Roblox engine's [BindableEvents](https://create.roblox.com/docs/reference/engine/classes/BindableEvent) and [RBXScriptSignals](https://create.roblox.com/docs/reference/engine/datatypes/RBXScriptSignal).
+## Welcome to NamedSignal!
+NamedSignal is a Luau signal implementation, which are essentially pure-Luau replacements (and successors) to the Roblox engine's BindableEvents.
 
----
+Signals allow you to effectively and conveniently implement Synchronous [Functional Reactive Programming](https://en.wikipedia.org/wiki/Functional_reactive_programming) <small>*(FRP for short)*</small> in Roblox, which allows you to build modular systems that subscribe into "events" from other systems without directly depending on them.
 
-*Like* most signal libraries, NamedSignal offers much greater performance, control, and the main purpose of this implementation — typechecking and ergonomics.
+## Why use this over others?
+NamedSignal, as its name suggests, lets you name your parameters (and define variadic ones too), allowing for a much richer auto-fill experience when connecting anonymous functions to events. It's also fully strictly typed for the New Luau Type Solver!
 
-*Unlike* most signal libraries, NamedSignal allows you to **name and define variadic parameters**. This solves a long-standing pain point of most implementations, where you previously had to name every parameter every time you anonymous auto-filled a new connection — or work with unhelpful `a`-number parameters (e.g. `a01`).
+Additionally, NamedSignal is a [GohanDucis's Class 3 certified signal](https://devforum.roblox.com/t/signal-certifications-classes-guide/4263792), meaning it implements standards and conventions best suited for effective game development.
 
-This is accomplished by using functiontypes (eg. `(foo: "bar") -> ()`) and User Defined Type Functions (UDTFs) exclusive to the New Luau Type Solver. Refer to [Usage](getting-started.md#usage) to see how to use this.
+If you're coming from BindableEvents, this will be a *major* upgrade for you!
+
+And for those seeking maximum performance, [**NamedSignal's `Signal:Fire()` is up to 4x faster than others**](performance.md), with comparable performance elsewhere!
