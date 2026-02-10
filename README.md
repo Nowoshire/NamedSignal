@@ -24,11 +24,12 @@ Signal = "nowoshire/namedsignal@^1.0.0"
 ---
 
 <br>
-<div align="center">
 
 > [!IMPORTANT]
 > ### Requires New Luau Type Solver<br>
 > NamedSignal is built for the New Luau Type Solver, it is not compatible with the old solver. See [Compatibility](https://Nowoshire.github.io/NamedSignal/compatibility) for more details.
+
+<div align="center">
 
 # Example Usage
 NamedSignal aims to be familiar and simple to use to those experienced with typechecking, below is an example snippet that should get you started!
