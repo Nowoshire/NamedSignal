@@ -1,21 +1,29 @@
 --[[
 	-- NamedSignal --
 	
-	v1.1.0
+	v1.2.0
 
-	A Luau signal implementation that lets you name and define variadic parameters — conveniently.
+	A zero compromises Luau signal implementation, designed for Synchronous Functional Reactive Programming (FRP) with
+	Atomic Propagation, that also lets you name and define variadic parameters!
 
-	Comprehensive documentation is available at: https://Nowoshire.github.io/NamedSignal/
+	NamedSignal is GohanDucis's Class 3 Signal certified:
+		https://devforum.roblox.com/t/signal-certifications-classes-guide/4263792
 
-	IMPORTANT:
-		This library does NOT support the old typesolver, as it completely lacks the features necessary for this to work!
+	Comprehensive documentation is available at:
+		https://Nowoshire.github.io/NamedSignal
+
+	NOTICE:
+		This library's types are not compatible with the old solver!
 
 	COMPATIBILITY:
-		If you require this to be backwards compatible with other signal libraries (generic type pack parameters), then you can
-		define a new type that proxies the parameters in a functiontype:
+		If you require this to be backwards compatible with other signal libraries that use generic type pack parameters
+		then you can define a new type that proxies the parameters in a functiontype:
 		```luau
 		export type GenericSignal<Params...> = Signal<(Params...) -> ()>
 		```
+
+		Full compatibility details are available at:
+			https://Nowoshire.github.io/NamedSignal/compatibility
 
 	This software is licensed under the MIT License:
 		https://github.com/Nowoshire/NamedSignal/blob/main/LICENSE
@@ -87,6 +95,30 @@ type function writable(ty: type)
 	return ty
 end
 
+-- Re-entrancy Helpers --
+
+--[[
+	Adds and yields the current running thread to the back of the last level reentrants list, or creating a new level if one does not exist.
+]]
+local function enqueueReentrant(reentrantsList: {{thread}})
+	local levels = #reentrantsList
+	if levels == 0 then
+		reentrantsList[1] = {coroutine.running()}
+	else
+		table.insert(reentrantsList[levels], coroutine.running())
+	end
+
+	coroutine.yield() -- wait to be resumed
+end
+
+--[[
+	Adds and yields the current running thread to a new reentrant level in the given reentrants list.
+]]
+local function enqueueReentrantLevel(reentrantsList: {{thread}})
+	table.insert(reentrantsList, {coroutine.running()})
+	coroutine.yield() -- wait to be resumed
+end
+
 -- Connection Class --
 local Connection = {}
 Connection.__index = Connection
@@ -100,37 +132,49 @@ export type Connection<Signature = () -> ()> = {
 	read Disconnect: typeof(
 		--[[
 			Disconnects the connection from the signal.
+
+			<code><strong>skipReentrancy</strong>: boolean?</code>
+			Whether to skip re-entrancy and disconnect the connection immediately, disregarding snapshot rules.
 		]]
-		function(self: Connection<Signature>): () end
+		function(self: Connection<Signature>, skipReentrancy: boolean?): () end
 	),
 	read Destroy: typeof(
 		--[[
 			Alias for <code>Connection:Disconnect()</code>.
 			Disconnects the connection from the signal.
+
+			<code><strong>skipReentrancy</strong>: boolean?</code>
+			Whether to skip re-entrancy and disconnect the connection immediately, disregarding snapshot rules.
 		]]
-		function(self: Connection<Signature>): () end
+		function(self: Connection<Signature>, skipReentrancy: boolean?): () end
 	),
 }
 
--- Internal type used for accessing properties that shouldn't be used by end user
+-- Internal type used for accessing members that shouldn't be used by end user
 type InternalConnection = {
 	_prev: InternalConnection?,
 	_next: InternalConnection?,
-	_mono: number, -- Used for preventing connections made during Fire from being fired as part of that same call.
+	_mono: number, -- Used for preventing connections made during invocation from firing in the same invocation
 	Signal: InternalSignal,
 } & writable<Connection>
 
 --[[
 	Disconnects the connection from the signal.
+
+	<code><strong>skipReentrancy</strong>: boolean?</code>
+	Whether to skip re-entrancy and disconnect the connection immediately, disregarding snapshot rules.
 ]]
-function Connection.Disconnect(self: InternalConnection): ()
+function Connection.Disconnect(self: InternalConnection, skipReentrancy: boolean?): ()
 	-- Check that the connection is actually connected
 	if not self.Connected then return end
 
 	local signal = self.Signal
-	local prv, nxt = self._prev, self._next
+	if not skipReentrancy and signal._firing then
+		enqueueReentrant(signal._reentrants)
+	end
 
 	self.Connected = false
+	local prv, nxt = self._prev, self._next
 
 	-- Replace the `_next` property of previous connection with the next connection if one exists
 	-- Otherwise, this was the first connection, set the head (first connection) to next connection.
@@ -239,11 +283,13 @@ export type Signal<Signature = () -> ()> = {
 	read Wait: SignalWaitSignature<any, Signature, (any) -> ()>,
 }
 
--- Internal type used for accessing properties that shouldn't be used by end user
+-- Internal type used for accessing members that shouldn't be used by end user
 type InternalSignal = {
 	_head: InternalConnection?,
 	_tail: InternalConnection?,
-	_maxMono: number
+	_maxMono: number, -- for preventing new connections made during invocation from firing in the same invocation
+	_firing: true?,
+	_reentrants: {{thread}}, -- {[re-entrancy level]: {thread}}
 } & Signal
 
 -- NOTE: The proper function signatures are set by the `Signal` type, we use internal types here to simplify the process of writing
@@ -253,8 +299,11 @@ type InternalSignal = {
 	Connects the given function to the signal and returns a <code>Connection</code> that represents it.
 ]]
 local function newConnection(signal: InternalSignal, func: (...any) -> ()): (InternalConnection)
-	local mono = signal._maxMono
-	mono += 1
+	if signal._firing then
+		enqueueReentrant(signal._reentrants)
+	end
+
+	signal._maxMono += 1
 
 	local tail = signal._tail
 	local connection = setmetatable({
@@ -262,7 +311,7 @@ local function newConnection(signal: InternalSignal, func: (...any) -> ()): (Int
 		Callback = func,
 		Signal = signal,
 		_prev = tail,
-		_mono = mono,
+		_mono = signal._maxMono,
 	}, Connection) :: InternalConnection
 
 	-- If tail connection exists: update it to point `_next` to this connection.
@@ -275,7 +324,6 @@ local function newConnection(signal: InternalSignal, func: (...any) -> ()): (Int
 
 	-- Update tail connection
 	signal._tail = connection
-	signal._maxMono = mono
 
 	return connection
 end
@@ -287,7 +335,7 @@ Signal.Connect = newConnection
 ]]
 function Signal.Once(self: InternalSignal, func: (...any) -> ()): (InternalConnection)
 	local connection: InternalConnection; connection = newConnection(self, function(...)
-		connection:Disconnect()
+		connection:Disconnect(true)
 		func(...)
 	end)
 
@@ -301,7 +349,7 @@ end
 function Signal.Wait(self: InternalSignal): (...any) -- NOTE: UDTF handles the proper return type
 	local thisThread = coroutine.running()
 	local connection: InternalConnection; connection = newConnection(self, function(...)
-		connection:Disconnect()
+		connection:Disconnect(true)
 		coroutine.resume(thisThread, ...)
 	end)
 
@@ -313,14 +361,23 @@ end
 	Calls all connected functions and resumes all waiting threads with the given arguments.
 ]]
 function Signal.Fire(self: InternalSignal, ...: any): () -- NOTE: UDTF handles the proper parameters
+	-- Defer re-entrant fires to respect deferred mutations
+	local reentrants = self._reentrants
+	if self._firing then
+		-- Create new re-entrancy level and wait to be resumed
+		enqueueReentrantLevel(reentrants)
+	else
+		self._firing = true
+	end
+	
+	local maxMono = self._maxMono -- Keep track of the max monotonic counter to prevent invoking connections made during invocation
 	local connection = self._head
-	local maxMono = self._maxMono -- Keep track of the max monotonic counter
 	while connection do
-		-- Recursion safeguard: Prevent connections made by connections from firing after :Fire() was first called
+		-- Prevent new connections made during invocation from firing in the same invocation
 		if connection._mono > maxMono then
 			break
 		end
-		
+
 		-- Every connection in the list should be connected, so we'll skip checking if it's connected here.
 		local numThreads = #threadPool
 		local thread: thread
@@ -339,9 +396,37 @@ function Signal.Fire(self: InternalSignal, ...: any): () -- NOTE: UDTF handles t
 		-- Update for next iteration
 		connection = connection._next
 	end
+
+	-- Resume first level reentrants
+	local reentrant = reentrants[1]
+	if reentrant then
+		-- We could use linked lists for O(1)
+		-- but it wouldn't meaningfully improve performance outside of extreme cases.
+		table.remove(reentrants, 1)
+		
+		-- Check if all fires have completed and reset _firing flag.
+		-- Reset this flag before resuming threads
+		if not reentrants[1] then
+			self._firing = nil
+		end
+
+		for _, thread in reentrant do
+			coroutine.resume(thread)
+		end
+	else
+		self._firing = nil
+	end
 end
 
+-- Currently, we do not allow bypassing re-entrancy for DisconnectAll/Destroy.
+-- Doing so would require cancelling threads and never resuming them, creating a major risk of hidden
+-- and hard to diagnose bugs, which we'd like to avoid.
+
 local function baseDisconnectAll(signal: InternalSignal)
+	if signal._firing then
+		enqueueReentrant(signal._reentrants)
+	end
+
 	local connection = signal._head
 	while connection do
 		-- We don't need to remove _next and _prev
@@ -376,7 +461,10 @@ local NamedSignal = {}
 	Returns a new Signal.
 ]]
 function NamedSignal.new<Signature>(): (Signal<Signature>)
-	return setmetatable({_maxMono = 0}, Signal) :: any
+	return setmetatable({
+		_maxMono = 0,
+		_reentrants = {},
+	}, Signal) :: any
 end
 
 return NamedSignal
