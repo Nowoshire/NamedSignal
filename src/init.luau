@@ -1,7 +1,7 @@
 --[[
 	-- NamedSignal --
 	
-	v1.2.0
+	v1.2.1
 
 	A zero compromises Luau signal implementation, designed for Synchronous Functional Reactive Programming (FRP) with
 	Atomic Propagation, that also lets you name and define variadic parameters!
@@ -154,7 +154,6 @@ export type Connection<Signature = () -> ()> = {
 type InternalConnection = {
 	_prev: InternalConnection?,
 	_next: InternalConnection?,
-	_mono: number, -- Used for preventing connections made during invocation from firing in the same invocation
 	Signal: InternalSignal,
 } & writable<Connection>
 
@@ -287,7 +286,6 @@ export type Signal<Signature = () -> ()> = {
 type InternalSignal = {
 	_head: InternalConnection?,
 	_tail: InternalConnection?,
-	_maxMono: number, -- for preventing new connections made during invocation from firing in the same invocation
 	_firing: true?,
 	_reentrants: {{thread}}, -- {[re-entrancy level]: {thread}}
 } & Signal
@@ -303,15 +301,12 @@ local function newConnection(signal: InternalSignal, func: (...any) -> ()): (Int
 		enqueueReentrant(signal._reentrants)
 	end
 
-	signal._maxMono += 1
-
 	local tail = signal._tail
 	local connection = setmetatable({
 		Connected = true,
 		Callback = func,
 		Signal = signal,
 		_prev = tail,
-		_mono = signal._maxMono,
 	}, Connection) :: InternalConnection
 
 	-- If tail connection exists: update it to point `_next` to this connection.
@@ -368,16 +363,11 @@ function Signal.Fire(self: InternalSignal, ...: any): () -- NOTE: UDTF handles t
 		enqueueReentrantLevel(reentrants)
 	else
 		self._firing = true
+
 	end
 	
-	local maxMono = self._maxMono -- Keep track of the max monotonic counter to prevent invoking connections made during invocation
 	local connection = self._head
 	while connection do
-		-- Prevent new connections made during invocation from firing in the same invocation
-		if connection._mono > maxMono then
-			break
-		end
-
 		-- Every connection in the list should be connected, so we'll skip checking if it's connected here.
 		local numThreads = #threadPool
 		local thread: thread
@@ -403,7 +393,7 @@ function Signal.Fire(self: InternalSignal, ...: any): () -- NOTE: UDTF handles t
 		-- We could use linked lists for O(1)
 		-- but it wouldn't meaningfully improve performance outside of extreme cases.
 		table.remove(reentrants, 1)
-		
+
 		-- Check if all fires have completed and reset _firing flag.
 		-- Reset this flag before resuming threads
 		if not reentrants[1] then
@@ -442,7 +432,6 @@ function Signal.DisconnectAll(self: InternalSignal): ()
 	baseDisconnectAll(self)
 	self._head = nil
 	self._tail = nil
-	self._maxMono = 0 -- reset monotonic counter as it's now safe to do so.
 end
 
 --[[
@@ -462,7 +451,6 @@ local NamedSignal = {}
 ]]
 function NamedSignal.new<Signature>(): (Signal<Signature>)
 	return setmetatable({
-		_maxMono = 0,
 		_reentrants = {},
 	}, Signal) :: any
 end
