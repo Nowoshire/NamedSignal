@@ -14,4 +14,3 @@ docs/.vitepress/dist
 docs/.vitepress/cache
 
 sourcemap.json
-package-lock.json
