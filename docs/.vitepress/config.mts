@@ -6,8 +6,7 @@ export default defineConfig({
 
   title: "NamedSignal",
   description: "Documentation for NamedSignal — A signal implementation for Luau with a nice balance of ergonomics, performance, and features.",
-
-  cleanUrls: true,
+  
   lastUpdated: true,
 
   themeConfig: {
