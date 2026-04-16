@@ -11,6 +11,6 @@ repository = "https://github.com/Nowoshire/NamedSignal"
 
 realm = "shared"
 exclude = ["*"]
-include = ["src", "src/*", "default.project.json", "LICENSE", "README.md"]
+include = ["src", "src/*", "default.project.json", "LICENSE", "README.md", "wally.toml"]
 
 [dependencies]
