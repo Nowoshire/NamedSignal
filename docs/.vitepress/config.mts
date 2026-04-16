@@ -2,11 +2,11 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  base: "https://nowoshire.github.io/NamedSignal/",
+  base: "/NamedSignal/",
 
   title: "NamedSignal",
   description: "Documentation for NamedSignal — A signal implementation for Luau with a nice balance of ergonomics, performance, and features.",
-  
+
   lastUpdated: true,
 
   themeConfig: {
