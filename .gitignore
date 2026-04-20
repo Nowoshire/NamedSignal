@@ -14,5 +14,6 @@ Signal.rbxm
 # Vitepress files
 docs/.vitepress/dist
 docs/.vitepress/cache
+.vitepress
 
 sourcemap.json
