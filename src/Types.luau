@@ -138,6 +138,8 @@ type BaseSignal<Signal, Connection, Signature> = {
 	read CancelAllMutations: typeof(
 		--[[
 			Cancels all deferred mutations that have not yet been processed on the <code>Signal</code>.
+
+			<strong>Note</strong>: Use with care! Can cause memory leaks or other issues if improperly used.
 		]]
 		function(self: Signal): () end
 	),
