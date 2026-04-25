@@ -2,7 +2,9 @@
 
 ## What's a Signal?
 
-A **Signal** is an implementation of the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern). It's a custom event-dispatching system used to manage communication between different scripts without tight coupling, improving code modularity, performance, and readability compared to the Roblox engine's [RBXScriptSignal](https://create.roblox.com/docs/reference/engine/datatypes/RBXScriptSignal) and [BindableEvents](https://create.roblox.com/docs/reference/engine/classes/BindableEvent).
+A **Signal** in the context of Roblox is an implementation of the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
+
+Signals are an event-dispatching pattern used to manage communication between different scripts without tight coupling, improving code modularity, performance, and readability compared to the Roblox engine's [RBXScriptSignal](https://create.roblox.com/docs/reference/engine/datatypes/RBXScriptSignal) and [BindableEvents](https://create.roblox.com/docs/reference/engine/classes/BindableEvent).
 
 ## Why use this?
 
@@ -13,9 +15,6 @@ Roblox provides built-in events, but they come with limitations:
 - **`BindableEvent`s are Instances** — managing them can become tedious and boilerplatey.
 - **Values are serialized and deep-copied** — modifying a table in a receiving script doesn't change the table in the sending script.
 - **No typechecking or autocomplete** — you'll need to memorize or waste time writing and reading documentation for your API.
-
-> [!NOTE]
-> Roblox recently announced "Signals" as part of their ["Evolving Luau OSS: Community Contributions & More!" announcement](https://devforum.roblox.com/t/evolving-luau-oss-community-contributions-more/4566806), despite its name however, it is ***not* a 'Signal' library**, and is instead a **Reactive State** implementation.
 
 Other Signal libraries are an improvement over this, but they still have a few issues:
 
