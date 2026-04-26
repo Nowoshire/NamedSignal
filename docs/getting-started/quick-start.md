@@ -80,14 +80,22 @@ Hello, world!
 
 ## Going Cross-Script
 
-The most common way of sharing Signals across scripts is to place it inside a table, whether at the module-level, as a member in a class, or elsewhere.
+The most common way of sharing Signals across scripts is to place it inside a table, whether at the module-level, as a member in a class, or elsewhere:
 
 ```luau
 const Module = {}
 
-Module.fooEvent = Signal.new<<(cat: "meow") -> ()>>() -- [!code focus][!code highlight]
+Module.fooEvent = Signal.new<<(cat: "meow") -> ()>>() -- [!code highlight]
 
 return Module
 ```
 
-Other scripts can then access the Signal by requiring the module that contains it.
+Other scripts can then access the created event by requiring the module that contains it:
+
+```luau
+const Module = require("path.to.module")
+
+Module.fooEvent:Connect(function(cat: "meow")
+	print(cat)
+end)
+```
