@@ -1,7 +1,7 @@
 --[[
 	-- NamedSignal --
 	
-	v2.0.4
+	v2.1.0
 
 	A Signal implementation for Luau, with a nice balance of ergonomics, performance, and features.
 	Most notably, you can use function types to get named parameters!
@@ -38,28 +38,29 @@
 --!strict
 --!optimize 2
 
--- Constants --
+-- Configuration --
+
 -- Controls whether event handlers are fired immediately or deferred.
 -- "Immediate" is the recommended default for performance reasons.
 const SIGNAL_BEHAVIOR: "Immediate" | "Deferred"
 	= "Immediate"
 
--- Whether to use the Roblox task library to handle invocations when available.
--- Only applicable when using Immediate signal behavior, always uses task.defer on Deferred mode when available.
--- Using the task library results in a roughly 2-4x worse firing performance, but provides error information in output.
-const USE_TASK_LIBRARY = true
-
--- Function used for resuming threads used for invocation, switched based on signal behavior and task library availability.
-const resumeInvokeThread = task and (
-	SIGNAL_BEHAVIOR == "Deferred" and task.defer or USE_TASK_LIBRARY and task.spawn
-) or coroutine.resume
+-- Controls the quality of error information provided in the output.
+-- "Full" uses task.spawn when available, providing the full error traceback with jump-to functionality, at the cost of worse performance.
+-- "Warn" uses coroutine.resume but outputs the error message with a simplified traceback. Better performance than "Full".
+-- "None" uses coroutine.resume but provides no error information. Best performance but not recommended for typical use.
+-- Has no effect when SIGNAL_BEHAVIOR is set to "Deferred", "Warn" is the recommended default.
+const ERROR_INFO_MODE: "Full" | "Warn" | "None"
+	= "Warn"
 
 -- Imports --
 const Types = require("@self/Types")
 
 -- Thread Recycling --
+
 --[[
-	Spawns a thread faster than the task library, only returns the created thread.
+	Creates and resumes a thread immediately, then resumes it.
+	Significantly faster than <code>task.spawn</code>.
 ]]
 const function spawnThread <A..., R...>(func: (A...) -> (R...), ...: A...): (thread)
 	const thread = coroutine.create(func)
@@ -76,7 +77,7 @@ const threadPool = {} :: {thread}
 --[[
 	Calls the given callback with the given arguments, then adds the thread into the cache for reuse.
 ]]
-const function callOnAndCacheThread(thread: thread, callback: (...any) -> (), ...: any): ()
+const function callOnAndCacheThread <A...>(thread: thread, callback: (A...) -> (), ...: A...): ()
 	callback(...)
 
 	-- Callback finished running, this thread is free again, add it back to the cache
@@ -89,7 +90,12 @@ end
 
 --[[
 	Indefinitely looping function body of event handler coroutines.
-	Gets resumed with functions to run followed by arguments to run them with.
+	Gets resumed with the thread and function to run followed by arguments to call the function with.
+
+	```luau
+	coroutine.resume(t, t, ...)
+	```
+	...where <code>t</code> is a thread that has the body of this function
 ]]
 const function eventHandlerRoutine(): ()
 	while true do
@@ -125,8 +131,31 @@ const function getAvailableThread(): (thread)
 	return thread
 end
 
--- Deferred Mutation Helpers --
+-- Function used for resuming threads used for invocation only.
+-- Switched based on signal behavior, task library availability, and ERROR_INFO_MODE.
+-- Using a mix of if-then-else expression and the and-or ternary-like idiom to utilize its fallback behavior.
+const resumeListener = task and (
+	if SIGNAL_BEHAVIOR == "Deferred" then task.defer
+	elseif ERROR_INFO_MODE == "Full" then task.spawn
+	else nil -- Fall back to below
+) or ( -- Task library is unavailable or a performance ERROR_INFO_MODE was chosen
+	if ERROR_INFO_MODE == "Warn" then (function()
+		const output = warn or print -- The environment might not have warn, fallback to print if that's the case.
+		return function(co: thread, ...: any)
+			const success, err = coroutine.resume(co, ...)
+			if success then return end
 
+			output(
+				"Error occurred during invocation:",
+				if err ~= nil then err else "Error occurred, no output from Luau.",
+				debug.traceback("\nStack Begin", 4) .. "Stack End"
+			)
+		end
+	end)()
+	else coroutine.resume -- "None" ERROR_INFO_MODE
+)
+
+-- Deferred Mutation Helpers --
 --[[
 	Queues a mutation at the last mutation level, or creates a new one if one does not exist.
 ]]
@@ -277,6 +306,9 @@ end
 
 Signal.CancelAllMutations = cancelAllMutations
 
+--[[
+	Disconnects all connections from the signal.
+]]
 const function baseDisconnectAll(signal: InternalSignal): ()
 	local connection = signal._head
 	while connection do
@@ -285,6 +317,9 @@ const function baseDisconnectAll(signal: InternalSignal): ()
 	end
 end
 
+--[[
+	Disconnects all connections from the signal, but also sets _next to nil to interrupt iteration.
+]]
 const function baseDisconnectAllRemoveNext(signal: InternalSignal): ()
 	local connection = signal._head
 	while connection do
@@ -420,22 +455,51 @@ end
 Signal.Once = signalOnce
 Signal.OnceNow = signalOnceNow
 
+--[[
+	Yields the current thread, and when resumed, returns the given parameters.
+	Used by <code>storeVariadics</code>.
+]]
+const function yieldVariadicStack(...: any)
+	coroutine.yield()
+	return ...
+end
+
+--[[
+	Stores the given parameters in a thread that immediately yields, and that when resumed, returns the parameters.
+]]
+const function storeVariadics<V...>(...: V...): (thread)
+	return spawnThread(yieldVariadicStack, ...)
+end
+
+--[[
+	Retrieves the variadic parameters stored in the given thread created by <code>storeVariadics</code>.
+]]
+const function retrieveVariadics(thread: thread): (...any)
+	-- Select with index 2, as coroutine.resume returns a boolean as the first argument, which we don't want.
+	return select(2, coroutine.resume(thread))
+end
+
+--[[
+	Yields the running thread, then unlinks the given connection from the signal, and returns any arguments returned from <code>coroutine.yield</code>.
+]]
+const function waitUnlinkAndReturnVargs(connection: InternalConnection, signal: InternalSignal): (...any)
+	const args = storeVariadics(coroutine.yield())
+	unlinkConnection(connection, signal)
+	return retrieveVariadics(args)
+end
+
 function Signal.Wait(self: InternalSignal): (...any)
 	const thisThread = coroutine.running()
-	signalOnce(self, function(...: any)
-		resumeInvokeThread(thisThread, ...)
-	end)
-
-	return coroutine.yield()
+	return waitUnlinkAndReturnVargs(signalOnce(self, function(...: any)
+		resumeListener(thisThread, ...)
+	end), self)
 end
 
 function Signal.WaitNow(self: InternalSignal): (...any)
 	const thisThread = coroutine.running()
-	signalOnceNow(self, function(...: any)
-		resumeInvokeThread(thisThread, ...)
-	end)
-
-	return coroutine.yield()
+	return waitUnlinkAndReturnVargs(signalOnceNow(self, function(...: any)
+		resumeListener(thisThread, ...)
+	end), self)
 end
 
 --[[
@@ -445,7 +509,7 @@ const function invokeListenersAndProcessMutations(signal: InternalSignal, mutati
 	local connection = signal._head
 	while connection do
 		const thread = getAvailableThread()
-		resumeInvokeThread(thread, thread, connection.Callback, ...)
+		resumeListener(thread, thread, connection.Callback, ...)
 		connection = connection._next
 	end
 
@@ -462,9 +526,7 @@ const function invokeListenersAndProcessMutations(signal: InternalSignal, mutati
 		if not func then
 			-- The function is only undefined for re-entrant firing.
 			-- As re-entrant firing creates a new mutation level, no more mutations will be on this level.
-			-- Resume parameter storage thread to retrieve the variadics, and select with index 2, as coroutine.resume
-			-- returns a boolean as the first argument, which we don't want.
-			invokeListenersAndProcessMutations(signal, mutationList, select(2, coroutine.resume(mutation.p :: thread)))
+			invokeListenersAndProcessMutations(signal, mutationList, retrieveVariadics(mutation.p :: thread))
 			return
 		end
 
@@ -475,21 +537,6 @@ const function invokeListenersAndProcessMutations(signal: InternalSignal, mutati
 			func(signal)
 		end
 	end
-end
-
---[[
-	Yields the current thread, and when resumed, returns the given parameters.
-]]
-const function yieldVariadicStack(...: any)
-	coroutine.yield()
-	return ...
-end
-
---[[
-	Stores the given parameters in a thread that immediately yields, and that when resumed, returns the parameters.
-]]
-const function storeVariadics<V...>(...: V...): (thread)
-	return spawnThread(yieldVariadicStack, ...)
 end
 
 function Signal.Fire(self: InternalSignal, ...: any)

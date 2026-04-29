@@ -4,11 +4,11 @@ This page documents the performance optimizations employed by NamedSignal, as we
 
 ## Optimizations
 
-### Linked Lists for O(1) Disconnection
+### Linked Lists for O(1) Disconnect
 
 **Connections use [doubly linked lists](https://en.wikipedia.org/wiki/Doubly_linked_list)** to maintain order while allowing constant-time disconnections.
 
-While they are slower to iterate than an array, they avoid the very expensive shifting required by arrays when disconnecting.
+While they are slower to iterate than an array, they avoid the extremely expensive shifting required by arrays when disconnecting.
 
 ### Multi Thread Recycling
 
@@ -20,11 +20,14 @@ Inspired by CPU cache architecture, NamedSignal implements **2 layers of thread 
 
 Accessing an upvalue is faster than indexing an array, so performance is slightly improved for non-yielding invocation.
 
-### Maximum Coroutine Library Use
+### `coroutine.resume` Over `task.spawn`
 
-**[`task.spawn`](https://create.roblox.com/docs/reference/engine/libraries/task#spawn) is much slower (~2-4x) than [`coroutine.resume`](https://create.roblox.com/docs/reference/engine/libraries/coroutine#resume)**, so the latter is used in place of the former wherever possible.
+**[`task.spawn`](https://create.roblox.com/docs/reference/engine/libraries/task#spawn) is much slower (~3-4x) than [`coroutine.resume`](https://create.roblox.com/docs/reference/engine/libraries/coroutine#resume)**.
 
-[`task.spawn`](https://create.roblox.com/docs/reference/engine/libraries/task#spawn) is still used for listener invocation when `USE_TASK_LIBRARY` is `true` and available, as it provides error information in output.
+By default **NamedSignal completely avoids use of the task library**. However it is still used available and configured to do so:
+
+- `SIGNAL_BEHAVIOR` is set to `"Deferred"` ([`task.defer`](https://create.roblox.com/docs/reference/engine/libraries/task#defer) will be used instead).
+- `ERROR_INFO_MODE` is set to `"Full"`.
 
 ### Avoiding The OOP API Internally
 

@@ -82,6 +82,10 @@ Listener #2
 Listener #3
 ```
 
+::: warning WARNING: No Infinite Re-entrancy Protection
+NamedSignal provides **protections against edge-case bugs** caused by unpredictable execution, but ***not* protections against infinite re-entrancy**, ensure you have proper escape branches when firing recursively, otherwise you may hit script timeouts or stack overflows.
+:::
+
 ## The Ability to Opt-Out
 
 While deferred mutations are the safest default, almost every `Signal` and `Connection` method in **NamedSignal** includes a **-Now** suffixed equivalent. These bypass the mutation queue, applying changes immediately.

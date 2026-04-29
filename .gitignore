@@ -1,7 +1,7 @@
 .vscode
 
-# Project model file
-Signal.rbxm
+# Built Model files
+*.rbxm
 
 # Roblox Studio lock files
 *.rbxlx.lock

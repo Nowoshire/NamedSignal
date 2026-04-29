@@ -24,7 +24,7 @@ You can do this in several ways:
 const helloEvent: Signal.Signal<(subject: string) -> ()> = Signal.new()
 ```
 
-```luau [Type casting [::]]
+```luau [Type Casting [::]]
 const helloEvent = Signal.new() :: Signal.Signal<(subject: string) -> ()>
 ```
 
@@ -46,7 +46,9 @@ const helloConnection = helloEvent:Connect(function(subject: string)
 end)
 ```
 
-`Signal:Connect()` returns a `Connection` object, which can later be used to disconnect the listener by calling `helloConnection:Disconnect()`.
+::: tip TIP: Connection Lifecycle
+`Signal:Connect()` returns a [`Connection`](../api-reference/api-overview#connection) object, which can later be used to disconnect the listener by calling `Connection:Disconnect()`.
+:::
 
 ## Fire the Signal
 

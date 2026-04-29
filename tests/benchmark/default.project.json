@@ -1,0 +1,6 @@
+{
+	"name": "Signal Benchmark",
+	"tree": {
+		"$path": "src"
+	}
+}

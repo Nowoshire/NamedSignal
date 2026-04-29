@@ -1,6 +1,6 @@
 # API Overview
 
-Overview of the NamedSignal API — the module Interface, `Signal` and `Connection` Classes, and Types.
+Overview of the NamedSignal API — the module Interface, `Signal` and `Connection` Classes, Types, and Configuration values.
 
 ## Interface
 
@@ -12,7 +12,7 @@ Overview of the NamedSignal API — the module Interface, `Signal` and `Connecti
 
 ## Classes
 
-For simplicity, the exact types used (such as generics or UDTFs) are not shown in this reference.
+For simplicity, the exact types used such as generics or [User-Defined Type Functions (UDTFs)](https://luau.org/types/type-functions/) are not shown in this reference.
 
 ### `Signal` {#signal}
 
@@ -32,8 +32,12 @@ For simplicity, the exact types used (such as generics or UDTFs) are not shown i
 | `:Fire()`               | `(self: Signal, ...any) -> ()`                         | Calls all connected functions and resumes all waiting threads with the given arguments.                                           |
 | `:FireNow()`            | `(self: Signal, ...any) -> ()`                         | The immediate mode equivalent of `Signal:Fire()`.                                                                                 |
 
-> [!NOTE]
-> `Signal:DisconnectAllNow()` and `Signal:DestroyNow()` immediately interrupt the dispatch of listeners.
+::: info
+
+#### Immediate-mode Interruptors
+
+`Signal:DisconnectAllNow()` and `Signal:DestroyNow()` immediately interrupt the dispatch of listeners.
+:::
 
 ### `Connection` {#connection}
 
@@ -48,8 +52,16 @@ For simplicity, the exact types used (such as generics or UDTFs) are not shown i
 | `:ReconnectNow()`  | `(self: Connection) -> ()` | The immediate mode equivalent of `Connection:Reconnect()`.            |
 | `:Destroy()`       | `(self: Connection) -> ()` | Destroys the `Connection`.                                            |
 
-> [!NOTE]
-> No `Connection:DestroyNow()` is provided, as it would cause several issues with deferred mutations.
+::: info
+
+#### No `Connection:DestroyNow()`
+
+No `Connection:DestroyNow()` method is provided, as it would cause several issues with deferred mutations.
+
+#### `:Once()` is still once when `:Reconnect()`ing
+
+`:Once()` connections retain their behavior when reconnected, they will disconnect again immediately on the next invocation.
+:::
 
 ## Types
 
@@ -67,7 +79,7 @@ const helloEvent = Signal.new() :: Signal.Signal<(subject: "world") -> ()>
 
 The pure generics `Signal` type. See [`Signal (Class)`](#signal) for API.
 
-Exists as a workaround for types that can't be serialized by UDTFs, and for backwards compatibility with other Signal implementations.
+Exists as a workaround for types that can't be serialized by UDTFs (such as **recursive types**), and for backwards compatibility with other Signal implementations.
 
 #### Usage {#genericsignal-type-usage}
 
@@ -88,4 +100,37 @@ local helloConnection: Signal.Connection<(subject: "world") -> ()> -- [!code foc
 helloConnection = helloEvent:Connect(function(subject: "world")
 	print(`Hello, {subject}!`)
 end)
+```
+
+## Configuration
+
+These constants are located at the top of the script and may be configured by the developer. They are set to the recommended values by default, and should not need to be changed.
+
+::: warning WARNING: No Stability Guarantee
+These values may change or be removed as NamedSignal evolves, you will also need to reconfigure these every update if you've overriden them.
+:::
+
+### `SIGNAL_BEHAVIOR` {#config-signal-behavior}
+
+Controls whether event handlers are fired immediately or deferred.
+`"Immediate"` is the recommended default for performance reasons.
+
+```luau
+const SIGNAL_BEHAVIOR: "Immediate" | "Deferred"
+	= "Immediate"
+```
+
+### `ERROR_INFO_MODE` {#config-error-info-mode}
+
+Controls the quality of error information provided in the output.
+
+- `"Full"` uses `task.spawn` when available, providing the full error traceback with jump-to functionality, at the cost of worse performance.
+- `"Warn"` uses `coroutine.resume` but outputs the error message with a simplified traceback. Better performance than `"Full"`.
+- `"None"` uses `coroutine.resume` but provides no error information. Best performance but not recommended for typical use.
+
+**Has no effect when [`SIGNAL_BEHAVIOR`](#config-signal-behavior) is set to `"Deferred"`**, `"Warn"` is the recommended default.
+
+```luau
+const ERROR_INFO_MODE: "Full" | "Warn" | "None"
+	= "Warn"
 ```

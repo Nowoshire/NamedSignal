@@ -1,5 +1,7 @@
 # Introduction
 
+## TODO redo this page
+
 ## What's a Signal?
 
 A **Signal** in the context of Roblox is an implementation of the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).

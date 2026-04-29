@@ -50,6 +50,7 @@ end
 type function SignalFireSignature(signal: type, signature: type, fallback: type)
 	const signatureTag = signature.tag
 	if signatureTag == "unknown" then
+		-- Return fallback for uninstantiated generic during Signal.new()
 		return fallback
 	end
 
@@ -72,6 +73,7 @@ end
 type function SignalWaitSignature(signal: type, signature: type, fallback: type)
 	const signatureTag = signature.tag
 	if signatureTag == "unknown" then
+		-- Return fallback for uninstantiated generic during Signal.new()
 		return fallback
 	end
 
@@ -201,12 +203,12 @@ type BaseSignal<Signal, Connection, Signature> = {
 	),
 }
 
-export type Signal<Signature = (...unknown) -> ()> = BaseSignal<Signal<Signature>, Connection<Signature>, Signature> & {
+export type Signal<Signature = (...any) -> ()> = BaseSignal<Signal<Signature>, Connection<Signature>, Signature> & {
 	-- UDTF generated Signatures
-	read Fire: SignalFireSignature<any, Signature, (...unknown) -> ()>,
-	read FireNow: SignalFireSignature<any, Signature, (...unknown) -> ()>,
-	read Wait: SignalWaitSignature<any, Signature, (...unknown) -> ()>,
-	read WaitNow: SignalWaitSignature<any, Signature, (...unknown) -> ()>,
+	read Fire: SignalFireSignature<any, Signature, (...any) -> ()>,
+	read FireNow: SignalFireSignature<any, Signature, (...any) -> ()>,
+	read Wait: SignalWaitSignature<any, Signature, (...any) -> ()>,
+	read WaitNow: SignalWaitSignature<any, Signature, (...any) -> ()>,
 }
 
 export type SignalMutation = {
@@ -224,7 +226,7 @@ export type InternalSignal = Signal & {
 	},
 }
 
-export type GenericSignal<Params... = ...unknown> = BaseSignal<GenericSignal<Params...>, Connection<(Params...) -> ()>, (Params...) -> ()> & {
+export type GenericSignal<Params... = ...any> = BaseSignal<GenericSignal<Params...>, Connection<(Params...) -> ()>, (Params...) -> ()> & {
 	-- Generic Signatures
 	read Fire: typeof(
 		--[[
