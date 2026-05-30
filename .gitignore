@@ -1,11 +1,13 @@
-.vscode
-
 # Built Model files
 *.rbxm
+*.rbxmx
 
 # Roblox Studio lock files
 *.rbxlx.lock
 *.rbxl.lock
+
+sourcemap.json
+.vscode
 
 # Affinity files
 *.af~lock~
@@ -15,4 +17,6 @@
 docs/.vitepress/dist
 docs/.vitepress/cache
 
-sourcemap.json
+# Tests aren't ready yet
+tests
+scripts
