@@ -8,10 +8,10 @@ Overview of the NamedSignal API — the module Interface, `Signal` and `Connecti
 
 ### Constructors
 
-| Property  | Type                                                                                        | Description                                                                          |
-| --------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `.new()`  | `read <Signature>() -> (Signal<Signature>)`                                                 | Returns a new [`Signal`](#signal).                                                   |
-| `.wrap()` | <code>read \<RBXSignal>() -> (<a href="#wrapsignal-type">WrapSignal\<RBXSignal></a>)</code> | Returns a new [`Signal`](#signal) that fires when the given `RBXScriptSignal` fires. |
+| Property  | Type                                                                                                            | Description                                                                          |
+| --------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `.new()`  | `read <Signature>() -> (Signal<Signature>)`                                                                     | Returns a new [`Signal`](#signal).                                                   |
+| `.wrap()` | <code>read \<RBXSignal>(rbxSignal: RBXSignal) -> (<a href="#wrapsignal-type">WrapSignal\<RBXSignal></a>)</code> | Returns a new [`Signal`](#signal) that fires when the given `RBXScriptSignal` fires. |
 
 ::: warning
 
