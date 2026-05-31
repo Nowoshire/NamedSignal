@@ -1,6 +1,6 @@
 <!-- markdownlint-disable-file MD033 -->
 
-<div align="center"><img src="docs/logo.png" alt="NamedSignal Logo" style="width:50%; height:auto;"> <!-- markdownlint-disable-line MD041 -->
+<div align="center"><img src="./docs/public/logo.png" alt="NamedSignal Logo" style="width:50%; height:auto;"> <!-- markdownlint-disable-line MD041 -->
 
 ## A Luau signal implementation with a nice balance of ergonomics, performance, and features. <!-- markdownlint-disable-line MD026 -->
 
