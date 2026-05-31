@@ -33,7 +33,7 @@ Back again with more improvements!
 ## Other Changes
 
 - `wally.toml` has been moved back to the project root, the `wally` module will no longer appear in builds.
-- Minor internal clean up and refactoring.
+- Minor internal refactoring.
 
 <br>
 
