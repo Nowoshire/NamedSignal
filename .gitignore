@@ -1,11 +1,13 @@
-.vscode
-
-# Project model file
-Signal.rbxm
+# Built Model files
+*.rbxm
+*.rbxmx
 
 # Roblox Studio lock files
 *.rbxlx.lock
 *.rbxl.lock
+
+sourcemap.json
+.vscode
 
 # Affinity files
 *.af~lock~
@@ -14,6 +16,7 @@ Signal.rbxm
 # Vitepress files
 docs/.vitepress/dist
 docs/.vitepress/cache
-.vitepress
 
-sourcemap.json
+# Tests aren't ready yet
+tests
+scripts

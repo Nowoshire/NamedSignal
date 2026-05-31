@@ -24,7 +24,7 @@ You can do this in several ways:
 const helloEvent: Signal.Signal<(subject: string) -> ()> = Signal.new()
 ```
 
-```luau [Type casting [::]]
+```luau [Type Casting [::]]
 const helloEvent = Signal.new() :: Signal.Signal<(subject: string) -> ()>
 ```
 
@@ -46,7 +46,9 @@ const helloConnection = helloEvent:Connect(function(subject: string)
 end)
 ```
 
-`Signal:Connect()` returns a `Connection` object, which can later be used to disconnect the listener by calling `helloConnection:Disconnect()`.
+::: tip TIP: Connection Lifecycle
+`Signal:Connect()` returns a [`Connection`](../api-reference/api-overview#connection) object, which can later be used to disconnect the listener by calling `Connection:Disconnect()`.
+:::
 
 ## Fire the Signal
 
@@ -80,14 +82,22 @@ Hello, world!
 
 ## Going Cross-Script
 
-The most common way of sharing Signals across scripts is to place it inside a table, whether at the module-level, as a member in a class, or elsewhere.
+The most common way of sharing Signals across scripts is to place it inside a table, whether at the module-level, as a member in a class, or elsewhere:
 
 ```luau
 const Module = {}
 
-Module.fooEvent = Signal.new<<(cat: "meow") -> ()>>() -- [!code focus][!code highlight]
+Module.fooEvent = Signal.new<<(cat: "meow") -> ()>>() -- [!code highlight]
 
 return Module
 ```
 
-Other scripts can then access the Signal by requiring the module that contains it.
+Other scripts can then access the created event by requiring the module that contains it:
+
+```luau
+const Module = require("path.to.module")
+
+Module.fooEvent:Connect(function(cat: "meow")
+	print(cat)
+end)
+```
