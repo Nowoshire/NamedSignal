@@ -1,7 +1,7 @@
 [package]
 name = "nowoshire/namedsignal"
 description = "A Signal implementation for Luau, with a nice balance of ergonomics, performance, and features."
-version = "2.1.1"
+version = "2.1.2"
 license = "MIT"
 authors = ["Nowoshire"]
 
@@ -17,4 +17,4 @@ exclude = ["*"]
 
 # wally seems to also recurse with src/* (?)
 # but I'm using src/** for clarity as it also seemingly works.
-include = ["src", "src/**", "LICENSE", "README.md", "wally.toml"]
+include = ["src", "src/**", "LICENSE", "README.md", "wally.toml", "default.project.json"]
