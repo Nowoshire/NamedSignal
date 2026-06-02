@@ -1,5 +1,11 @@
 <!-- markdownlint-disable-file MD025 MD033 MD024 -->
 
+# Version 2.1.2
+
+## Fixes
+
+Fixed wally installation once more, `default.project.json` wasn't getting included.
+
 # Version 2.1.1
 
 ## Fixes
