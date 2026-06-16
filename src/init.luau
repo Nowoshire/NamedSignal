@@ -299,7 +299,7 @@ end
 const Signal = {}
 Signal.__index = Signal
 
--- NOTE: UDTFs currently can't serialize recursive types, use the GenericSignal type instead if you run into such issues.
+-- The UDTF generated signal type.
 export type Signal<Signature = (...any) -> ()> = Types.Signal<Signature>
 
 -- A generics-only alternative as a workaround for types that UDTFs can't serialize, or for compatibility with other signal implementations.
