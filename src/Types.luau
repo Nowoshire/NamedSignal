@@ -1,6 +1,7 @@
 --!strict
 
 -- Type Functions --
+
 --[[
 	Makes all read-only or write-only properties to be both writable and readable.
 ]]
@@ -8,7 +9,6 @@ type function internal(ty: type): (type)
 	const function processType(t: type): (type)
 		const tTag = t.tag
 		if tTag == "table" then
-			-- props
 			for keyType, rwType in t:properties() do
 				t:setproperty(
 					keyType,
@@ -16,7 +16,6 @@ type function internal(ty: type): (type)
 				)
 			end
 			
-			-- indexer
 			const indexer = t:indexer()
 			if indexer then
 				t:setindexer(
@@ -48,8 +47,9 @@ end
 
 type function SignalFireSignature(signal: type, signature: type, fallback: type): (type)
 	const signatureTag = signature.tag
-	if signatureTag == "unknown" then
-		-- Return fallback for uninstantiated generic during Signal.new()
+
+	-- Handle uninstantiated generics, e.g. from `Signal.new()`
+	if signatureTag == "unknown" or signatureTag == "any" then
 		return fallback
 	end
 
@@ -71,8 +71,9 @@ end
 
 type function SignalWaitSignature(signal: type, signature: type, fallback: type): (type)
 	const signatureTag = signature.tag
-	if signatureTag == "unknown" then
-		-- Return fallback for uninstantiated generic during Signal.new()
+	
+	-- Handle uninstantiated generics, e.g. from `Signal.new()`
+	if signatureTag == "unknown" or signatureTag == "any" then
 		return fallback
 	end
 
@@ -177,7 +178,6 @@ type BaseConnection<Signal, Signature> = {
 
 export type Connection<Signature = (...any) -> ()> = BaseConnection<Signal<Signature>, Signature>
 export type GenericConnection<Params...> = BaseConnection<GenericSignal<Params...>, (Params...) -> ()>
-
 export type InternalConnection = internal<Connection> & {
 	_prev: InternalConnection?,
 	_next: InternalConnection?,
@@ -185,6 +185,12 @@ export type InternalConnection = internal<Connection> & {
 }
 
 -- Signal Types --
+export type SignalMutation = {
+	f: ((InternalSignal | InternalConnection | thread, InternalSignal?) -> ())?, -- for any mutation that isn't fire
+	c: InternalConnection?, -- for connection operations
+	a: {any}?, -- array of stored arguments from deferred fire
+}
+
 -- Base signal type without Fire/Wait signatures
 type BaseSignal<Signal, Connection, Signature> = {
 	read CancelAllMutations: typeof(
@@ -254,22 +260,16 @@ type BaseSignal<Signal, Connection, Signature> = {
 }
 
 export type Signal<Signature = (...any) -> ()> = BaseSignal<Signal<Signature>, Connection<Signature>, Signature> & {
-	-- UDTF generated Signatures
-	-- Currently, recursive types are not serializable by UDTFs, so `any` is used in place of the proper Signal type
-	-- `any` still allows the method to show in autocomplete suggestions, and self not being checked is not a huge deal.
+	-- UDTF-generated Signatures
+	-- Currently, UDTFs do not support self-recursion (impossible to reduce), so we use `any` in place of it for now.
+	-- This still allows the methods to show up in autocomplete, and `self` not being checked is not a huge deal.
 	read Fire: SignalFireSignature<any, Signature, (...any) -> ()>,
 	read FireNow: SignalFireSignature<any, Signature, (...any) -> ()>,
 	read Wait: SignalWaitSignature<any, Signature, (...any) -> ()>,
 	read WaitNow: SignalWaitSignature<any, Signature, (...any) -> ()>,
 }
 
-export type SignalMutation = {
-	f: ((InternalSignal | InternalConnection | thread, InternalSignal?) -> ())?, -- for any mutation that isn't fire
-	c: InternalConnection?, -- for connection operations
-	a: {any}?, -- array of stored arguments from deferred fire
-}
-
--- Don't need to use internal UDTF here as there is no read-only public API that we write to.
+-- We don't need to use internal UDTF here as there is no read-only public API that we write to.
 export type InternalSignal = Signal & {
 	_head: InternalConnection?,
 	_tail: InternalConnection?,
