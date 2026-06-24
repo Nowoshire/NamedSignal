@@ -13,7 +13,8 @@ export default defineConfig({
 		// https://vitepress.dev/reference/default-theme-config
 		nav: [
 			{ text: 'Home', link: '/' },
-			{ text: 'API', link: '/api-reference/api-overview' }
+			{ text: 'API', link: '/api-reference/api-overview' },
+			{ text: 'Changelog', link: '/additional-info/changelog' }
 		],
 
 		sidebar: [
@@ -36,15 +37,16 @@ export default defineConfig({
 				text: 'Additional Info',
 				items: [
 					{ text: 'Performance', link: '/additional-info/performance' },
-					{ text: 'Gohan\'s Certification', link: '/additional-info/gohans-certification' },
 					{ text: 'Gotchas', link: '/additional-info/gotchas' },
+					{ text: 'Gohan\'s Certification', link: '/additional-info/gohans-certification' },
+					{ text: 'Changelog', link: "/additional-info/changelog" },
 					{ text: 'Future Considerations', link: '/additional-info/future-considerations' },
 				]
 			}
 		],
 
 		socialLinks: [
-			{ icon: 'github', link: 'https://github.com/Nowoshire/NamedSignal' },
+			{ icon: 'github', link: 'https://github.com/averlyst/NamedSignal' },
 			{ icon: 'robloxstudio', link: 'https://devforum.roblox.com/t/4341837' }
 		],
 		
