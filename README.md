@@ -8,7 +8,7 @@
 &ensp;
 [![Documentation Badge](https://img.shields.io/badge/Documentation-5C00C0?style=for-the-badge&logo=readme&logoColor=white)][Documentation Link]
 <br><br>
-[![Release Badge](https://img.shields.io/github/v/release/Nowoshire/NamedSignal)][Latest Release Link]
+[![Release Badge](https://img.shields.io/github/v/release/Averlyst/NamedSignal)][Latest Release Link]
 &nbsp;
 [![Wally Badge](https://img.shields.io/badge/wally-package-FF7030?style=flat&label=wally)][Wally Link]
 &emsp;
