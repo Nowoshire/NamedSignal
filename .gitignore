@@ -10,7 +10,10 @@
 
 # Local editor files
 sourcemap.json
-.vscode
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 
 # Unncessary Vitepress files 
 /docs/.vitepress/dist
