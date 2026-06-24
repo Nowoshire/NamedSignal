@@ -1,4 +1,4 @@
-<!-- markdownlint-disable-file MD033 MD024 -->
+<!-- markdownlint-disable-file MD024 MD033 MD034 -->
 
 # Changelog
 
@@ -8,6 +8,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/2.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.1.3] - 2026-06-24
+
+Hello again, this release is mostly just some codebase maintenance and cleaning up.
+
+### Added
+
+- Minor documentation improvements.
+  - Improved guidance on how to use `wally-package-types` during installation.
+  - Added changelogs, available at the project root and on the documentation website.
+  - Added [Function `coroutine.finally(thread, callback)` to Future Considerations](https://personal.averlyst.dev/NamedSignal/additional-info/future-considerations#function-coroutine-finally-thread-callback).
+
+### Changes
+
+- Codebase cleanup and workflow improvements.
+- I've changed my GitHub username, however I've taken care to prevent hijacking and to redirect all URLs.
+  - Repository has been moved to https://github.com/averlyst/NamedSignal — GitHub redirects these automatically.
+  - Documentation has been moved https://personal.averlyst.dev/NamedSignal — Old links will lead to a redirection page!
 
 ## [2.1.2] - 2026-06-03
 
@@ -21,7 +39,7 @@ Fixed wally installation once more, `default.project.json` wasn't getting includ
 
 Fix `GenericSignal` unintentionally still using UDTFs in Connection type with new `GenericConnection` type.
 
-See the [API Reference](https://nowoshire.github.io/NamedSignal/api-reference/api-overview#genericconnection-type-usage) for usage information.
+See the [API Reference](https://personal.averlyst.dev/NamedSignal/api-reference/api-overview#genericconnection-type-usage) for usage information.
 
 ## [2.1.0] - 2026-05-31
 
@@ -49,8 +67,8 @@ Back again with more improvements!
 
 ### Documentation
 
-- Rewrote much of the [Introduction](https://nowoshire.github.io/NamedSignal/getting-started/introduction) documentation page, with much more detailed comparisons between BindableEvents and other popular signal libraries.
-- Added the ['Future Considerations'](https://nowoshire.github.io/NamedSignal/additional-info/future-considerations) documentation page, which goes over some notable Luau RFCs and how NamedSignal might evolve if they were implemented.
+- Rewrote much of the [Introduction](https://personal.averlyst.dev/NamedSignal/getting-started/introduction) documentation page, with much more detailed comparisons between BindableEvents and other popular signal libraries.
+- Added the ['Future Considerations'](https://personal.averlyst.dev/NamedSignal/additional-info/future-considerations) documentation page, which goes over some notable Luau RFCs and how NamedSignal might evolve if they were implemented.
 - Minor cleanup across a few other documentation pages.
 
 ### Other Changes
@@ -69,7 +87,7 @@ After much wait, NamedSignal v2.0.0 is here!
 ### Major Changes
 
 - Deferred mutations have been completely reworked and is now much more comprehensive and completely yieldless <small>(even `Signal:Fire()`!)</small>.
-- [**Added -Now suffixed method equivalents**](https://Nowoshire.github.io/NamedSignal/api-reference/deferred-mutations#the-ability-to-opt-out) to most deferred APIs to bypass deferred mutations.
+- [**Added -Now suffixed method equivalents**](https://personal.averlyst.dev/NamedSignal/api-reference/deferred-mutations#the-ability-to-opt-out) to most deferred APIs to bypass deferred mutations.
 
 ### Minor Additions
 
@@ -82,8 +100,8 @@ After much wait, NamedSignal v2.0.0 is here!
 
 ### Other Changes
 
-- No longer a Class 3 Signal under Gohan's Certification, see my [reasoning for doing so](https://Nowoshire.github.io/NamedSignal/additional-info/gohans-certification#not-quite-to-spec).
-- [Documentation](https://Nowoshire.github.io/NamedSignal/) has been completely rewritten using VitePress, new benchmarks are still a work in progress.
+- No longer a Class 3 Signal under Gohan's Certification, see my [reasoning for doing so](https://personal.averlyst.dev/NamedSignal/additional-info/gohans-certification#not-quite-to-spec).
+- [Documentation](https://personal.averlyst.dev/NamedSignal/) has been completely rewritten using VitePress, new benchmarks are still a work in progress.
 - Slightly improve the performance of non-yielding dispatch by implementing a "fast" cache as a local variable.
 
 ## [1.2.1] - 2026-02-11
@@ -102,8 +120,20 @@ Prevent connections made during invocation from being fired (with minimal impact
 
 Minor code cleanup and type improvements, add new benchmarks and wally install.
 
-Bumped version to major 1 in accordance with Semantic Versioning 2.0,0, indicating public release and stabiliity guarantee.
+Bumped version to major 1 in accordance with Semantic Versioning 2.0,0, indicating public release and stability guarantee.
 
 ## [0.1.0] - 2026-02-07
 
 Initial release of NamedSignal
+
+[2.1.3]: https://github.com/averlyst/NamedSignal/compare/v2.1.3...v2.1.2
+[2.1.2]: https://github.com/averlyst/NamedSignal/compare/v2.1.1...v2.1.2
+[2.1.1]: https://github.com/averlyst/NamedSignal/compare/v2.1.1...v2.1.0
+[2.1.0]: https://github.com/averlyst/NamedSignal/compare/v2.1.0...v2.0.4
+[2.0.4]: https://github.com/averlyst/NamedSignal/compare/v2.0.4...v2.0.0
+[2.0.0]: https://github.com/averlyst/NamedSignal/compare/v2.0.0...v1.2.1
+[1.2.1]: https://github.com/averlyst/NamedSignal/compare/v1.2.1...v1.2.0
+[1.2.0]: https://github.com/averlyst/NamedSignal/compare/v1.2.0...v1.1.0
+[1.1.0]: https://github.com/averlyst/NamedSignal/compare/v1.1.0...v1.0.0
+[1.0.0]: https://github.com/averlyst/NamedSignal/compare/v1.0.0...v0.1.0
+[0.1.0]: https://github.com/averlyst/NamedSignal/releases/tag/v0.1.0

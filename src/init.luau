@@ -1,20 +1,20 @@
 --[[
 	-- NamedSignal --
 	
-	v2.1.2
+	v2.1.3
 
 	A Signal implementation for Luau, with a nice balance of ergonomics, performance, and features.
 	Most notably, you can use function types to get named parameters!
 
 	Comprehensive documentation and additional info is available at:
-		https://Nowoshire.github.io/NamedSignal
+		https://personal.averlyst.dev/NamedSignal
 
 	This software is licensed under the MIT License:
-		https://github.com/Nowoshire/NamedSignal/blob/main/LICENSE
+		https://github.com/averlyst/NamedSignal/blob/main/LICENSE
 
 		MIT License
 
-		Copyright (c) 2026 Nowoshire
+		Copyright (c) 2026 Averlyst
 
 		Permission is hereby granted, free of charge, to any person obtaining a copy
 		of this software and associated documentation files (the "Software"), to deal
@@ -40,17 +40,21 @@
 
 -- Configuration --
 
--- Controls whether event handlers are fired immediately or deferred.
--- "Immediate" is the recommended default for performance reasons.
+--[[
+	Controls whether event handlers are fired immediately or deferred.
+	"Immediate" is the recommended default for performance reasons.
+]]
 const SIGNAL_BEHAVIOR: "Immediate" | "Deferred"
 	= "Immediate"
 
--- Controls the quality of error information provided in the output.
--- "Auto" uses "Full" in Roblox Studio, and "Warn" in production.
--- "Full" uses task.spawn when available, providing the full error traceback with jump-to functionality, at the cost of worse performance.
--- "Warn" uses coroutine.resume but outputs the error message with a simplified traceback. Better performance than "Full".
--- "None" uses coroutine.resume but provides no error information. Best performance but not recommended for typical use.
--- Has no effect when SIGNAL_BEHAVIOR is set to "Deferred", "Auto" is the recommended default.
+--[[
+	Controls the quality of error information provided in the output.
+	"Auto" uses "Full" in Roblox Studio, and "Warn" in production.
+	"Full" uses task.spawn when available, providing the full error traceback with jump-to functionality, at the cost of worse performance.
+	"Warn" uses coroutine.resume but outputs the error message with a simplified traceback. Better performance than "Full".
+	"None" uses coroutine.resume but provides no error information. Best performance but not recommended for typical use.
+	Has no effect when SIGNAL_BEHAVIOR is set to "Deferred", "Auto" is the recommended default.
+]]
 const ERROR_INFO_MODE: "Auto" | "Full" | "Warn" | "None"
 	= "Auto"
 
@@ -103,7 +107,7 @@ end
 	```luau
 	coroutine.resume(t, t, ...)
 	```
-	...where <code>t</code> is a thread that has the body of this function
+	...where <code>t</code> is a thread that has the body of this function.
 ]]
 const function eventHandlerRoutine(): ()
 	while true do
@@ -141,27 +145,29 @@ end
 
 -- Function used for resuming threads used for invocation only.
 -- Switched based on signal behavior, task library availability, and ERROR_INFO_MODE.
--- Using a mix of if-then-else expression and the and-or ternary-like idiom to utilize its fallback behavior.
+-- We use a mix of if-then-else expression, and the lua and-or idiom to intentionally use its fallback behavior.
+-- This avoids excessively large and duplicated branching that comes with using exclusively if-then-else expression.
 const resumeListener = task and (
-	if SIGNAL_BEHAVIOR == "Deferred" then task.defer
+	if SIGNAL_BEHAVIOR == "Deferred"
+		then task.defer
 	elseif ERROR_INFO_MODE == "Full"
-		or ERROR_INFO_MODE == "Auto"
-		and typeof(game) == "Instance" and game:GetService("RunService"):IsStudio()
-	then task.spawn
+		or ERROR_INFO_MODE == "Auto" and typeof(game) == "Instance" and game:GetService("RunService"):IsStudio()
+		then task.spawn
 	else nil -- Fallback to below
 ) or (
 	-- Task library is unavailable or a performance ERROR_INFO_MODE was chosen
-	if ERROR_INFO_MODE == "None" then coroutine.resume
-	else (function() -- "Auto" in production or "Warn" ERROR_INFO_MODE
-		const output = warn or print -- Portability, the environment might not have warn.
+	if ERROR_INFO_MODE == "None"
+		then coroutine.resume
+	else (function(): (thread, ...any) -> () -- "Auto" in production or "Warn" ERROR_INFO_MODE
+		const log = warn or print -- Portability, the environment might not have warn.
 
-		return function(co: thread, ...: any)
+		return function(co: thread, ...: any): ()
 			const success, err = coroutine.resume(co, ...)
 			if success then return end
 
 			-- About as close as we can get to normal error semantics, just with some minor styling differences.
 			-- Avoiding tostring conversions to get proper outputs of non-string error messages.
-			output(
+			log(
 				"Error occurred during invocation:",
 				if err ~= nil then err else "Error occurred, no output from Luau.",
 				debug.traceback(co, "\nStack Begin") .. "Stack End"
@@ -171,6 +177,7 @@ const resumeListener = task and (
 )
 
 -- Deferred Mutation Helpers --
+
 --[[
 	Queues a mutation at the last mutation level, or creates a new one if one does not exist.
 ]]
@@ -299,7 +306,7 @@ end
 const Signal = {}
 Signal.__index = Signal
 
--- NOTE: UDTFs currently can't serialize recursive types, use the GenericSignal type instead if you run into such issues.
+-- The UDTF generated signal type.
 export type Signal<Signature = (...any) -> ()> = Types.Signal<Signature>
 
 -- A generics-only alternative as a workaround for types that UDTFs can't serialize, or for compatibility with other signal implementations.
@@ -344,7 +351,7 @@ const function baseDisconnectAllInterrupt(signal: InternalSignal): ()
 	local connection = signal._head
 	while connection do
 		connection.Connected = false
-		connection._next, connection = nil, connection._next -- Iterate and also remove _next to stop fire iteration
+		connection._next, connection = nil, connection._next -- Remove _next and iterate
 	end
 end
 
@@ -453,7 +460,7 @@ Signal.ConnectNow = newLinkedConnection
 
 const function signalOnce(signal: InternalSignal, func: (...any) -> ()): (InternalConnection)
 	local connection: InternalConnection
-	connection = signalConnect(signal, function(...: any)
+	connection = signalConnect(signal, function(...: any): ()
 		unlinkConnection(connection :: InternalConnection, signal)
 		func(...)
 	end)
@@ -463,7 +470,7 @@ end
 
 const function signalOnceNow(signal: InternalSignal, func: (...any) -> ()): (InternalConnection)
 	local connection: InternalConnection
-	connection = newLinkedConnection(signal, function(...)
+	connection = newLinkedConnection(signal, function(...: any): ()
 		unlinkConnection(connection :: InternalConnection, signal)
 		func(...)
 	end)
@@ -483,7 +490,7 @@ const function safeAwaitSignal(connection: InternalConnection, signal: InternalS
 	return unpack(args)
 end
 
-const function resumeAwaiting(thread: thread, ...: any)
+const function resumeAwaiting(thread: thread, ...: any): ()
 	-- Check that it is resumable to avoid nuisance errors.
 	-- Not ideal but we don't have access to any information that would allow automatic cleanup.
 	if isThreadResumable(thread) then
@@ -493,14 +500,14 @@ end
 
 function Signal.Wait(self: InternalSignal): (...any)
 	const thisThread = coroutine.running()
-	return safeAwaitSignal(signalOnce(self, function(...: any)
+	return safeAwaitSignal(signalOnce(self, function(...: any): ()
 		resumeAwaiting(thisThread, ...)
 	end), self)
 end
 
 function Signal.WaitNow(self: InternalSignal): (...any)
 	const thisThread = coroutine.running()
-	return safeAwaitSignal(signalOnceNow(self, function(...: any)
+	return safeAwaitSignal(signalOnceNow(self, function(...: any): ()
 		resumeAwaiting(thisThread, ...)
 	end), self)
 end
@@ -508,7 +515,7 @@ end
 --[[
 	Calls all currently connected functions and processes first-level mutations.
 ]]
-const function processDispatch(signal: InternalSignal, mutationList: {{Types.SignalMutation}}, ...: any)
+const function processDispatch(signal: InternalSignal, mutationList: {{Types.SignalMutation}}, ...: any): ()
 	local connection = signal._head
 	while connection do
 		const thread = getAvailableThread()
@@ -529,7 +536,7 @@ const function processDispatch(signal: InternalSignal, mutationList: {{Types.Sig
 		if not func then
 			-- The function is only undefined for re-entrant firing.
 			-- As re-entrant firing creates a new mutation level, no more mutations will be on this level.
-			processDispatch(signal, mutationList, unpack(mutation.a :: {any}))
+			processDispatch(signal, mutationList, unpack(mutation.a :: any))
 			return
 		end
 
@@ -542,7 +549,7 @@ const function processDispatch(signal: InternalSignal, mutationList: {{Types.Sig
 	end
 end
 
-function Signal.Fire(self: InternalSignal, ...: any)
+function Signal.Fire(self: InternalSignal, ...: any): ()
 	const mutations = self._mutations
 
 	if self._firing then
@@ -560,7 +567,7 @@ function Signal.Fire(self: InternalSignal, ...: any)
 	self._firing = nil
 end
 
-function Signal.FireNow(self: InternalSignal, ...: any)
+function Signal.FireNow(self: InternalSignal, ...: any): ()
 	const mutations = self._mutations
 
 	self._firing = true
@@ -593,7 +600,7 @@ function NamedSignal.wrap<RBXSignal>(rbxSignal: RBXSignal & RBXScriptSignal): (W
 		_mutations = {},
 	}, Signal)
 
-	signal._wrapConnection = rbxSignal:Connect(function(...)
+	signal._wrapConnection = rbxSignal:Connect(function(...: any): ()
 		signal:Fire(...)
 	end)
 
