@@ -1,13 +1,13 @@
 [package]
 name = "nowoshire/namedsignal"
 description = "A Signal implementation for Luau, with a nice balance of ergonomics, performance, and features."
-version = "2.1.2"
+version = "2.1.3"
 license = "MIT"
-authors = ["Nowoshire"]
+authors = ["averlyst"]
 
 registry = "https://github.com/UpliftGames/wally-index"
-homepage = "https://nowoshire.github.io/NamedSignal/"
-repository = "https://github.com/Nowoshire/NamedSignal"
+homepage = "https://personal.averlyst.dev/NamedSignal/"
+repository = "https://github.com/averlyst/NamedSignal"
 
 realm = "shared"
 
